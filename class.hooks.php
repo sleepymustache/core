@@ -70,7 +70,7 @@ class Hook {
 	*/
 	private static function initialize() {
 		if (!self::$initialized) {
-			self::$directories[] = DIRBASE . "/modules/enabled/";
+			self::$directories[] = DIRBASE . "/modules/";
 			self::$initialized = true;
 			self::load();
 		}

@@ -17,7 +17,7 @@ namespace Sleepy;
  *     $page->show();
  * </code>
  *
- * ## Template file: *\app\modules\templates\default.tpl*
+ * ## Template file: *\app\templates\default.tpl*
  *
  * <code>
  *     <html>
