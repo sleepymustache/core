@@ -77,6 +77,8 @@ if (\Sleepy\SM::isENV(STAGE_URL)) {
 }
 
 // Set Debugging
-\Sleepy\Debug::$enable_show = true;				// Show debug info on screen
-\Sleepy\Debug::$enable_send = false;			// Send debug info via email
-\Sleepy\Debug::$enable_log  = false;			// Log debug info to a db
+if (class_exists('\Sleepy\Debug')) {
+	\Sleepy\Debug::$enable_show = true;		// Show debug info on screen
+	\Sleepy\Debug::$enable_send = false;	// Send debug info via email
+	\Sleepy\Debug::$enable_log  = false;	// Log debug info to a db
+}
