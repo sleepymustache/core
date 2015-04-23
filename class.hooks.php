@@ -168,10 +168,6 @@ class Hook {
 			}
 		}
 
-		// Memory profiling
-		//\Sleepy\Debug::$enable_send = true;
-		//\Sleepy\Debug::out($name . " " . memory_get_usage());
-
 		return $returned;
 	}
 
