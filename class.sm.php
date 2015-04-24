@@ -98,7 +98,7 @@ class SM {
 	 */
 	public static function isENV($str) {
 		foreach (explode("," , $str) as $url) {
-			if (strpos(strtolower($_SERVER['SERVER_NAME']), strtolower(trim($url))) !== false)
+			if (stripos($_SERVER['SERVER_NAME'], trim($url)) !== false)
 				return true;
 		}
 
