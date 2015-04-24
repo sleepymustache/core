@@ -29,7 +29,6 @@ if (\Sleepy\SM::isENV(STAGE_URL)) {
 
 	// Analytics
 	define('GA_ACCOUNT', "");
-
 } elseif (\Sleepy\SM::isENV(LIVE_URL)) {
 	define("ENV", "LIVE");
 
@@ -51,7 +50,6 @@ if (\Sleepy\SM::isENV(STAGE_URL)) {
 
 	// Analytics
 	define('GA_ACCOUNT', "");
-
 } else {
 	define("ENV", "DEV");
 
@@ -73,7 +71,6 @@ if (\Sleepy\SM::isENV(STAGE_URL)) {
 
 	// Analytics
 	define('GA_ACCOUNT', "");
-
 }
 
 // Set Debugging
