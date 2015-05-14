@@ -171,6 +171,8 @@ class Template {
 				// Stores the values of <for> and <in> into $forin
 				preg_match('/{{\s?#each\s(?<for>\w+) in (?<in>.*?)\s?}}/', $value, $forin);
 
+				$forin['in'] = strtolower($forin['in']);
+
 				// Removes the each loop
 				$new_template = preg_replace('/{{\s?#each.*?}}/s', '', $value, 1);
 				$new_template = preg_replace('/{{\s?\/each\s?}}$/s', '', $new_template, 1);
