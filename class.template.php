@@ -125,13 +125,16 @@ class Template {
 	 * @return mixed        A sub-array or string
 	 */
 	private function _assignArrayByPath($arr, $path) {
+
 		$keys = explode('.', $path);
 
-		foreach ($keys as $key) {
-			if (array_key_exists($key, $arr)) {
-				$arr = $arr[$key];
-			} else {
-				return false;
+		if (is_array($keys)) {
+			foreach ($keys as $key) {
+				if (array_key_exists($key, $arr)) {
+					$arr = $arr[$key];
+				} else {
+					return false;
+				}
 			}
 		}
 
@@ -208,13 +211,8 @@ class Template {
 						$rendered = $rendered . $this->_render($new_template, $new_data);
 					}
 				} else {
-					foreach ($in as $string) {
-						$new_data[$forin['for']] = $string;
-						$rendered = $rendered . $this->_render($new_template, $new_data);
-					}
-
 					// render the new template
-					$rendered = $rendered . $this->_render($new_template, array_merge($new_data, $data));
+					$rendered = $rendered . $this->_render($new_template, $data);
 				}
 
 				$template = str_replace($value, $rendered, $template);
