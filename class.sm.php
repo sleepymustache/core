@@ -38,9 +38,8 @@ class SM {
 		session_start();
 
 		// If we are not setup yet, forward the user to the setup page
-		if (!@include_once('global.php')) {
-			header('Location: /app/setup/');
-			die();
+		if (@!include_once($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'settings.php')) {
+			include_once('settings.php');
 		}
 
 		require_once('class.hooks.php');
