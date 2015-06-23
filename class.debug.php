@@ -194,6 +194,7 @@ class Debug {
 	 * @param  mixed $var
 	 *   Anything you want to log
 	 * @return bool
+	 * @todo add a create for the log table
 	 */
 	private function log($var) {
 		if (!self::$enable_log) {
@@ -230,6 +231,8 @@ class Debug {
 	 * @param mixed $var
 	 *   Anything you want to log
 	 * @return bool
+	 * @todo  create a hook so the dev can create custom views when outputting
+	 *        debug data.
 	 */
 	private static function show($var) {
 		if (!self::$enable_show) {
@@ -312,6 +315,7 @@ class Debug {
 	 * Sends the email.
 	 *
 	 * @return bool true if sent successfully
+	 * @todo  make this private, I cannot remember why this is public...
 	 */
 	public static function sendEmail() {
 		if (!self::$enable_send) {

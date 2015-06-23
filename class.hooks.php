@@ -35,6 +35,9 @@ namespace Sleepy;
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
  * @version 1.1
  * @license  http://opensource.org/licenses/MIT
+ *
+ * @todo devise a better way of passing multiple parameters to hooks, perhaps
+ *       use objects instead of arrays
  */
 class Hook {
 
