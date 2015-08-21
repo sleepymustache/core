@@ -98,6 +98,92 @@ class Router {
 	}
 
 	/**
+	 * Creates a new route, uses a controller and view
+	 * @param  string   $pattern A pattern to match
+	 * @param  function $func    A callback function
+	 * @return object            \Sleepy\Route()
+	 */
+	public static function mvc($pattern, $defaults = array()) {
+		self::route($pattern, function ($route) use ($defaults) {
+			// set default for defaults... (-_-)
+			$defaults['controller'] = (array_key_exists('controller', $defaults)) ? $defaults['controller'] : 'home';
+			$defaults['action'] = (array_key_exists('action', $defaults)) ? $defaults['action'] : 'index';
+			$defaults['id'] = (array_key_exists('id', $defaults)) ? $defaults['id'] : '';
+
+			if (!is_array($route->params)) $route->params = array();
+
+			// Set default controller, action, and id
+			$controller = (array_key_exists('controller', $route->params)) ? $route->params['controller'] : $defaults['controller'];
+			$action = (array_key_exists('action', $route->params)) ? $route->params['action'] : $defaults['action'];
+			$id = (array_key_exists('id', $route->params)) ? $route->params['id'] : $defaults['id'];
+
+			// Make all the defaults available in the routes parameters
+			$route->params = array_merge($defaults, $route->params);
+
+			$controller_file = $_SERVER['DOCUMENT_ROOT'] . '/app/controllers/';
+			$controller_file .= strtolower($controller) . '.php';
+
+			//Sterilize
+			$controller = strtolower($controller);
+			$controller = str_replace('-', '', $controller);
+			$action = str_replace('-', '_', $action);
+
+			// Call Controller::action($route)
+			if (file_exists($controller_file)) {
+				require_once($controller_file);
+				if (class_exists($controller)) {
+					$c = new $controller;
+					if (method_exists($c, $action)) {
+						$c->$action($route);
+					} else {
+						throw new \Exception("Router: Action ($action) does not exist in Controller ($controller).");
+					}
+				} else {
+					throw new \Exception("Router: Controller ($controller) does not exist.");
+				}
+			} else {
+				throw new \Exception("Router: Controller File ($controller_file) does not exist.");
+			}
+		});
+	}
+
+	/**
+	 * Creates a new route
+	 * @param  string   $pattern A pattern to match
+	 * @param  function $func    A callback function
+	 * @return object            \Sleepy\Route()
+	 */
+	public static function redirect($controller, $action='index', $params='') {
+		$route = new _Route(md5("{{ $controller }}/{{ $action }}/{{ id }}/*"));
+		$route->params = $params;
+
+		$controller_file = $_SERVER['DOCUMENT_ROOT'] . '/app/controllers/';
+		$controller_file .= strtolower($controller) . '.php';
+
+		//Sterilize
+		$controller = strtolower($controller);
+		$controller = str_replace('-', '', $controller);
+		$action = str_replace('-', '_', $action);
+
+		// Call Controller::action($route)
+		if (file_exists($controller_file)) {
+			require_once($controller_file);
+			if (class_exists($controller)) {
+				$c = new $controller;
+				if (method_exists($c, $action)) {
+					$c->$action($route);
+				} else {
+					throw new \Exception("Router: Action ($action) does not exist.");
+				}
+			} else {
+				throw new \Exception("Router: Controller ($controller) does not exist.");
+			}
+		} else {
+			throw new \Exception("Router: Controller File ($controller_file) does not exist.");
+		}
+	}
+
+	/**
 	 * Starts parsing the Router::routes
 	 * @return boolean true if a route was matched
 	 */
@@ -222,10 +308,10 @@ class _Route {
 	 * @return boolean True, if there is a wildcard
 	 */
 	private function _hasWildcard($pattern) {
-		if (strlen($pattern) < 1) {
+		if (strlen($pattern) == 0) {
 			return false;
 		} else {
-			return strpos($pattern, "*");
+			return strpos($pattern, "*") !== false;
 		}
 	}
 
@@ -286,6 +372,7 @@ class _Route {
 	public function execute() {
 		$noMatch = false;
 
+		// Exit when there is nothing left to do
 		if (count($this->_functions) < 1) {
 			return;
 		}
@@ -307,7 +394,7 @@ class _Route {
 				foreach ($pattern as $idx => $value) {
 					// Store the variable
 					if ($this->_isPlaceholder($value)) {
-						if (!$this->_storeVariable($value, Router::$parameters[$idx])) {
+						if (!$this->_storeVariable($value, @Router::$parameters[$idx])) {
 							$noMatch = true;
 							break;
 						}
@@ -355,6 +442,7 @@ class _Route {
 			}
 		}
 
+		// This wasn't it, let's try the next one
 		$this->execute();
 	}
 }
