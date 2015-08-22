@@ -158,8 +158,7 @@ class Template {
 				ob_clean(); // clear buffer in $this->show();
 				throw new \Exception($this->directory . str_replace('#include ', '', $index) . $this->extension . " doesn't exist. Cannot include file.");
 			}
-			$template = str_replace($include[0], $this->_render(ob_get_contents(), $data), $template);
-			ob_end_clean();
+			$template = str_replace($include[0], $this->_render(ob_get_clean(), $data), $template);
 
 			return $this->_render($template, $data);
 		}
@@ -265,8 +264,7 @@ class Template {
 		// Render template file
 		ob_start();
 		include($this->directory . $this->_file . $this->extension);
-		$template = $this->_render(ob_get_contents(), $this->_data);
-		ob_end_clean();
+		$template = $this->_render(ob_get_clean(), $this->_data);
 
 		if (class_exists("\Sleepy\Hook")) {
 			$template = \Sleepy\Hook::addFilter('render_template_' . $this->_file, $template);
@@ -316,8 +314,7 @@ class Template {
 	 * @param  string $placeholder   The template placeholder
 	 */
 	public function bindStop($placeholder) {
-		$content = ob_get_contents();
-		ob_end_clean();
+		$content = ob_get_clean();
 
 		if (class_exists("\Sleepy\Hook")) {
 			$content = \Sleepy\Hook::addFilter('bind_placeholder_' . $placeholder, $content);
