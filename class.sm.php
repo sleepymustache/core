@@ -46,6 +46,7 @@ class SM {
 		require_once('class.template.php');
 		require_once('class.router.php');
 
+		ob_start();
 		\Sleepy\Hook::addAction('sleepy_preprocess');
 
 		// Send the encoding ahead of time to speed up rendering
@@ -53,6 +54,7 @@ class SM {
 	}
 
 	public function __destruct() {
+		echo \Sleepy\Hook::addFilter('sleepy_render', ob_get_clean());
 		\Sleepy\Hook::addAction('sleepy_postprocess');
 	}
 
