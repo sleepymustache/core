@@ -206,6 +206,12 @@ class Router {
 			$route->execute();
 		}
 
+		if (!self::$routeFound) {
+
+
+			throw new RouteNotFound('Router: Route not found.');
+		}
+
 		return self::$routeFound;
 	}
 
@@ -446,3 +452,8 @@ class _Route {
 		$this->execute();
 	}
 }
+
+/**
+ * Exception: Route not Found
+ */
+class RouteNotFound extends \Exception {}
