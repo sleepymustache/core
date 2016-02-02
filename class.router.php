@@ -136,13 +136,13 @@ class Router {
 					if (method_exists($c, $action)) {
 						$c->$action($route);
 					} else {
-						throw new \Exception("Router: Action ($action) does not exist in Controller ($controller).");
+						throw new RouteNotFound("Router: Action ($action) does not exist in Controller ($controller).");
 					}
 				} else {
-					throw new \Exception("Router: Controller ($controller) does not exist.");
+					throw new RouteNotFound("Router: Controller ($controller) does not exist.");
 				}
 			} else {
-				throw new \Exception("Router: Controller File ($controller_file) does not exist.");
+				throw new RouteNotFound("Router: Controller File ($controller_file) does not exist.");
 			}
 		});
 	}
@@ -207,8 +207,6 @@ class Router {
 		}
 
 		if (!self::$routeFound) {
-
-
 			throw new RouteNotFound('Router: Route not found.');
 		}
 
