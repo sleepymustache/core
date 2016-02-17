@@ -9,68 +9,68 @@ define('STAGE_URL', '');
 
 // Server dependant variables (Dev/Stage/Live)
 if (\Sleepy\SM::isENV(STAGE_URL)) {
-	define("ENV", "STAGE");
+	define('ENV', 'STAGE');
 
 	// Base Directory/URL
-	define("URLBASE", "/");
-	define("DIRBASE", realpath(dirname(__FILE__)) . "/../");
+	define('URLBASE', '/');
+	define('DIRBASE', realpath(dirname(__FILE__)) . '/../');
 
 	// DB Credentials
-	define ("DBHOST", "");
-	define ("DBUSER", "");
-	define ("DBPASS", "");
-	define ("DBNAME", "");
+	define ('DBHOST', '');
+	define ('DBUSER', '');
+	define ('DBPASS', '');
+	define ('DBNAME', '');
 
 	// Email information
-	define('EMAIL_FROM', "");
-	define('EMAIL_TO',   "");
-	define('EMAIL_CC',   "");
-	define('EMAIL_BCC',  "");
+	define('EMAIL_FROM', '');
+	define('EMAIL_TO',   '');
+	define('EMAIL_CC',   '');
+	define('EMAIL_BCC',  '');
 
 	// Analytics
-	define('GA_ACCOUNT', "");
+	define('GA_ACCOUNT', '');
 } elseif (\Sleepy\SM::isENV(LIVE_URL)) {
-	define("ENV", "LIVE");
+	define('ENV', 'LIVE');
 
 	// Base Directory/URL
-	define("URLBASE", "/");
-	define("DIRBASE", realpath(dirname(__FILE__)) . "/../");
+	define('URLBASE', '/');
+	define('DIRBASE', realpath(dirname(__FILE__)) . '/../');
 
 	// DB Credentials
-	define ("DBHOST", "");
-	define ("DBUSER", "");
-	define ("DBPASS", "");
-	define ("DBNAME", "");
+	define ('DBHOST', '');
+	define ('DBUSER', '');
+	define ('DBPASS', '');
+	define ('DBNAME', '');
 
 	// Email information
-	define('EMAIL_FROM', "");
-	define('EMAIL_TO',   "");
-	define('EMAIL_CC',   "");
-	define('EMAIL_BCC',  "");
+	define('EMAIL_FROM', '');
+	define('EMAIL_TO',   '');
+	define('EMAIL_CC',   '');
+	define('EMAIL_BCC',  '');
 
 	// Analytics
-	define('GA_ACCOUNT', "");
+	define('GA_ACCOUNT', '');
 } else {
-	define("ENV", "DEV");
+	define('ENV', 'DEV');
 
 	// Base Directory/URL
-	define("URLBASE", "/");
-	define("DIRBASE", realpath(dirname(__FILE__)) . "/../");
+	define('URLBASE', '/');
+	define('DIRBASE', realpath(dirname(__FILE__)) . '/../');
 
 	// DB Credentials
-	define ("DBHOST", "");
-	define ("DBUSER", "");
-	define ("DBPASS", "");
-	define ("DBNAME", "");
+	define ('DBHOST', '');
+	define ('DBUSER', '');
+	define ('DBPASS', '');
+	define ('DBNAME', '');
 
 	// Email information
-	define('EMAIL_FROM', "");
-	define('EMAIL_TO',   "");
-	define('EMAIL_CC',   "");
-	define('EMAIL_BCC',  "");
+	define('EMAIL_FROM', '');
+	define('EMAIL_TO',   '');
+	define('EMAIL_CC',   '');
+	define('EMAIL_BCC',  '');
 
 	// Analytics
-	define('GA_ACCOUNT', "");
+	define('GA_ACCOUNT', '');
 }
 
 // Set Debugging

@@ -124,17 +124,17 @@ class Debug {
 
 	private function __construct() {
 		// Setup email defaults
-		$server_ip = (isset($_SERVER['SERVER_ADDR'])) ? $_SERVER['SERVER_ADDR'] : "";
-		$user_ip = (isset($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : "";
-		$filename = (isset($_SERVER['SCRIPT_FILENAME'])) ? $_SERVER['SCRIPT_FILENAME'] : "";
-		$date = date(DATE_ATOM, mktime(date("G"), date("i"), 0, date("m"), date("d"), date("Y")));
+		$server_ip = (isset($_SERVER['SERVER_ADDR'])) ? $_SERVER['SERVER_ADDR'] : '';
+		$user_ip = (isset($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : '';
+		$filename = (isset($_SERVER['SCRIPT_FILENAME'])) ? $_SERVER['SCRIPT_FILENAME'] : '';
+		$date = date(DATE_ATOM, mktime(date('G'), date('i'), 0, date('m'), date('d'), date('Y')));
 
 		Debug::$emailBuffer = array();
 		Debug::$emailBuffer[] = "Date: {$date}";
 		Debug::$emailBuffer[] = "Server IP: {$server_ip}";
 		Debug::$emailBuffer[] = "Client IP: {$user_ip}";
 		Debug::$emailBuffer[] = "Filename: {$filename}";
-		Debug::$emailBuffer[] = "---";
+		Debug::$emailBuffer[] = '---';
 		Debug::$emailTo = EMAIL_TO;
 		Debug::$emailFrom = EMAIL_FROM;
 		Debug::$emailSubject = $date;
@@ -146,7 +146,7 @@ class Debug {
 		Debug::$dbName  = DBNAME;
 		Debug::$dbUser  = DBUSER;
 		Debug::$dbPass  = DBPASS;
-		Debug::$dbTable = "log";
+		Debug::$dbTable = 'log';
 	}
 
 	public function __destruct() {
@@ -180,9 +180,9 @@ class Debug {
 	 */
 	public function exceptionHandler($e) {
 		if (headers_sent()) {
-			echo "Error: " , $e->getMessage(), "\n";
+			echo 'Error: ' , $e->getMessage(), "\n";
 		} else {
-			$_SESSION['exception'] = $e->getMessage() . "<br />" . str_replace("\n", "<br />", $e->getTraceAsString()) . "";
+			$_SESSION['exception'] = $e->getMessage() . '<br />' . str_replace("\n", '<br />', $e->getTraceAsString()) . '';
 			header('Location: /error/');
 		}
 	}
@@ -210,11 +210,11 @@ class Debug {
 		try {
 			// MySQL with PDO_MYSQL
 			if (!is_object(self::$dbPDO)) {
-				self::$dbPDO = new \PDO("mysql:host=" . self::$dbHost . ";dbname=" . self::$dbName, self::$dbUser, self::$dbPass);
+				self::$dbPDO = new \PDO('mysql:host=' . self::$dbHost . ';dbname=' . self::$dbName, self::$dbUser, self::$dbPass);
 				self::$dbPDO->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 			}
-			$query = self::$dbPDO->prepare("INSERT INTO " . self::$dbTable . " (datetime, message) values (:datetime, :message)");
-			$datetime = date(DATE_ATOM, mktime(date("G"), date("i"), 0, date("m"), date("d"), date("Y")));
+			$query = self::$dbPDO->prepare('INSERT INTO ' . self::$dbTable . ' (datetime, message) values (:datetime, :message)');
+			$datetime = date(DATE_ATOM, mktime(date('G'), date('i'), 0, date('m'), date('d'), date('Y')));
 			$query->bindParam(':datetime', $datetime);
 			$query->bindParam(':message', $buffer);
 			$query->execute();
@@ -222,6 +222,7 @@ class Debug {
 			self::show($e->getMessage());
 			return false;
 		}
+
 		return true;
 	}
 
@@ -238,13 +239,17 @@ class Debug {
 		if (!self::$enable_show) {
 			return false;
 		}
-		echo "<pre>";
+
+		echo '<pre>';
+
 		if (is_array($var) || is_object($var)) {
 			print_r($var);
 		} else {
 			echo $var;
 		}
-		echo "</pre>";
+
+		echo '</pre>';
+
 		return true;
 	}
 
@@ -284,9 +289,11 @@ class Debug {
 		if (self::$enable_send) {
 			$result = $result && self::$instance->send($var);
 		}
+
 		if (self::$enable_log) {
 			$result = $result && self::$instance->log($var);
 		}
+
 		if (self::$enable_show) {
 			$result = $result && self::$instance->show($var);
 		}
@@ -324,7 +331,7 @@ class Debug {
 
 		$headers = array();
 		$headers[] = 'From: ' . self::$emailFrom;
-		$headers[] = "MIME-Version: 1.0";
+		$headers[] = 'MIME-Version: 1.0';
 		$headers[] = 'Content-type: text/html; charset=iso-8859-1';
 		if (self::$emailCC != '') {
 			$headers[] = 'Cc: ' . self::$emailCC;

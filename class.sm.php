@@ -73,7 +73,7 @@ class SM {
 	 * @return boolean True if we are live
 	 */
 	public static function isLive() {
-		return (ENV == "LIVE");
+		return (ENV == 'LIVE');
 	}
 
 	/**
@@ -81,7 +81,7 @@ class SM {
 	 * @return boolean True if we are in the staging environment
 	 */
 	public static function isStage() {
-		return (ENV == "STAGE");
+		return (ENV == 'STAGE');
 	}
 
 	/**
@@ -89,7 +89,7 @@ class SM {
 	 * @return boolean True if we are in in the development environment
 	 */
 	public static function isDev() {
-		return (ENV != "LIVE" && ENV != "STAGE");
+		return (ENV != 'LIVE' && ENV != 'STAGE');
 	}
 
 	/**
@@ -98,7 +98,7 @@ class SM {
 	 * @return boolean      true if there was a match
 	 */
 	public static function isENV($str) {
-		foreach (explode("," , $str) as $url) {
+		foreach (explode(',' , $str) as $url) {
 			if (stripos($_SERVER['SERVER_NAME'], trim($url)) !== false)
 				return true;
 		}

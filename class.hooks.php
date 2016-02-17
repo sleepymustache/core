@@ -73,7 +73,7 @@ class Hook {
 	*/
 	private static function initialize() {
 		if (!self::$initialized) {
-			self::$directories[] = DIRBASE . "/modules/";
+			self::$directories[] = DIRBASE . '/modules/';
 			self::$initialized = true;
 			self::load();
 		}
@@ -87,7 +87,7 @@ class Hook {
 	 * @return void
 	 */
 	private static function load() {
-		$all = "";
+		$all = '';
 
 		// get all subdirectories
 		foreach (self::$directories as $directory) {
@@ -104,7 +104,7 @@ class Hook {
 
 		// include all php files
 		foreach ($all as $directory) {
-			$files = glob($directory . "/*.php");
+			$files = glob($directory . '/*.php');
 
 			if (is_array($files)) {
 				foreach($files as $file) {

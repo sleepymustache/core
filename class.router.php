@@ -48,7 +48,7 @@ class Router {
 	 * The delimiter for the route pattern
 	 * @var string
 	 */
-	public static $delimiter = "/";
+	public static $delimiter = '/';
 
 	/**
 	 * If true, parse the querystring instead of the path
@@ -195,7 +195,7 @@ class Router {
 		}
 
 		if (self::$querystring) {
-			$currentPath = str_replace("/?q=", "", $currentPath);
+			$currentPath = str_replace('/?q=', '', $currentPath);
 		}
 
 		// Get all parameters
@@ -278,8 +278,8 @@ class _Route {
 	 * @return string              The stripped placeholder
 	 */
 	private function _cleanPlaceholder($placeholder) {
-		$key = str_replace("{{", "", $placeholder);
-		$key = str_replace("}}", "", $key);
+		$key = str_replace('{{', '', $placeholder);
+		$key = str_replace('}}', '', $key);
 		return trim($key);
 	}
 
@@ -289,7 +289,7 @@ class _Route {
 	 * @return boolean         True, if it is a placeholder
 	 */
 	private function _isPlaceholder($string) {
-		return substr($string, 0,2) == "{{" && substr($string, strlen($string) - 2, 2) == "}}";
+		return substr($string, 0,2) == '{{' && substr($string, strlen($string) - 2, 2) == '}}';
 	}
 
 	/**
@@ -299,11 +299,11 @@ class _Route {
 	 * @return string         The parsed string
 	 */
 	private function _runFilters($key, $string) {
-		if (class_exists("\Sleepy\Hook")) {
-			$string = \Sleepy\Hook::addFilter("route_parameters", $string);
-			$string = \Sleepy\Hook::addFilter("route_parameter_" . $key, $string);
-			$string = \Sleepy\Hook::addFilter("route_" . $this->name . "_parameters", $string);
-			$string = \Sleepy\Hook::addFilter("route_" . $this->name . "_parameter_" . $key, $string);
+		if (class_exists('\Sleepy\Hook')) {
+			$string = \Sleepy\Hook::addFilter('route_parameters', $string);
+			$string = \Sleepy\Hook::addFilter('route_parameter_' . $key, $string);
+			$string = \Sleepy\Hook::addFilter('route_' . $this->name . '_parameters', $string);
+			$string = \Sleepy\Hook::addFilter('route_' . $this->name . '_parameter_' . $key, $string);
 		}
 
 		return $string;
@@ -317,7 +317,7 @@ class _Route {
 		if (strlen($pattern) == 0) {
 			return false;
 		} else {
-			return strpos($pattern, "*") !== false;
+			return strpos($pattern, '*') !== false;
 		}
 	}
 
@@ -328,7 +328,7 @@ class _Route {
 	 * @return boolean       True, if we succeeded
 	 */
 	private function _storeVariable($key, $value) {
-		if ($value == "") {
+		if ($value == '') {
 			return false;
 		}
 
@@ -409,7 +409,7 @@ class _Route {
 					}
 
 					// If we are at a wildcard, we have a match!
-					if ($value == "*") {
+					if ($value == '*') {
 						$this->splat = implode(Router::$delimiter, array_slice(Router::$parameters, $idx));
 						break;
 					}
@@ -426,15 +426,15 @@ class _Route {
 		}
 
 		if ($noMatch) {
-			if (class_exists("\Sleepy\Hook")) {
-				\Sleepy\Hook::addAction("route_failed");
-				\Sleepy\Hook::addAction("route_failed_" . $this->name);
+			if (class_exists('\Sleepy\Hook')) {
+				\Sleepy\Hook::addAction('route_failed');
+				\Sleepy\Hook::addAction('route_failed_' . $this->name);
 			}
 		} else {
 			// Call route_start actions
-			if (class_exists("\Sleepy\Hook")) {
-				\Sleepy\Hook::addAction("route_start");
-				\Sleepy\Hook::addAction("route_start_" . $this->name);
+			if (class_exists('\Sleepy\Hook')) {
+				\Sleepy\Hook::addAction('route_start');
+				\Sleepy\Hook::addAction('route_start_' . $this->name);
 			}
 
 			$this->pattern = $rawPattern;
@@ -442,9 +442,9 @@ class _Route {
 			$func($this);
 
 			// Call route_end actions
-			if (class_exists("\Sleepy\Hook")) {
-				\Sleepy\Hook::addAction("route_end");
-				\Sleepy\Hook::addAction("route_end_" . $this->name);
+			if (class_exists('\Sleepy\Hook')) {
+				\Sleepy\Hook::addAction('route_end');
+				\Sleepy\Hook::addAction('route_end_' . $this->name);
 			}
 		}
 

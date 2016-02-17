@@ -48,7 +48,7 @@ class Template {
 	/**
 	 * string The extension for template files
 	 */
-	public $extension = ".tpl";
+	public $extension = '.tpl';
 
 	/**
 	 * string The template directory
@@ -72,18 +72,18 @@ class Template {
 	 * @param string $template The name of the template
 	 * @param string $basedir  The base directory for template files
 	 */
-	public function __construct($template='', $basedir="") {
-		if (class_exists("\Sleepy\Hook")) {
+	public function __construct($template='', $basedir='') {
+		if (class_exists('\Sleepy\Hook')) {
 			\Sleepy\Hook::addAction('template_start');
 		}
 
 		// If they didn't pass a basedir then try the default
-		if ($basedir == "") {
+		if ($basedir == '') {
 			if (!defined('DIRBASE')) {
-				define('DIRBASE', $_SERVER["DOCUMENT_ROOT"] . "/app");
+				define('DIRBASE', $_SERVER['DOCUMENT_ROOT'] . '/app');
 			}
 
-			$this->directory = DIRBASE . "/templates/";
+			$this->directory = DIRBASE . '/templates/';
 		} else {
 			$this->directory = $basedir;
 		}
@@ -101,7 +101,7 @@ class Template {
 	 */
 	private function _checkTemplate($file) {
 		if (empty($file)) {
-			throw new \Exception("Template file has not been set.");
+			throw new \Exception('Template file has not been set.');
 		}
 
 		// Check that the directory is set correctly
@@ -156,7 +156,7 @@ class Template {
 				include($this->directory . str_replace('#include ', '', $index) . $this->extension);
 			} else {
 				ob_clean(); // clear buffer in $this->show();
-				throw new \Exception($this->directory . str_replace('#include ', '', $index) . $this->extension . " doesn't exist. Cannot include file.");
+				throw new \Exception($this->directory . str_replace('#include ', '', $index) . $this->extension . ' doesn\'t exist. Cannot include file.');
 			}
 			$template = str_replace($include[0], $this->_render(ob_get_clean(), $data), $template);
 
@@ -168,7 +168,7 @@ class Template {
 			// For every #each
 			foreach ($loops[0] as $value) {
 				// Reset rendered data
-				$rendered = "";
+				$rendered = '';
 
 				// Stores the values of <for> and <in> into $forin
 				preg_match('/{{\s?#each\s(?<for>\w+) in (?<in>.*?)\s?}}/', $value, $forin);
@@ -186,7 +186,7 @@ class Template {
 				if (is_array($in[0])) {
 
 					// Allow hooks to edit the data
-					if (class_exists("\Sleepy\Hook")) {
+					if (class_exists('\Sleepy\Hook')) {
 						$in = \Sleepy\Hook::addFilter('template_each_array', array($in));
 					}
 
@@ -195,7 +195,7 @@ class Template {
 					foreach ($in as $new_data) {
 						$iterator++;
 
-						if (class_exists("\Sleepy\Hook")) {
+						if (class_exists('\Sleepy\Hook')) {
 							$new_data = \Sleepy\Hook::addFilter('template_each', array($new_data));
 							$new_data = \Sleepy\Hook::addFilter('template_each_' + $forin['for'], array($new_data));
 						}
@@ -218,7 +218,7 @@ class Template {
 			}
 		}
 
-		if (class_exists("\Sleepy\Hook")) {
+		if (class_exists('\Sleepy\Hook')) {
 			$template = \Sleepy\Hook::addFilter('prerender_template', $template);
 		}
 
@@ -234,11 +234,11 @@ class Template {
 			);
 
 			# We trim so that there are no extra blank arguments
-			$arguments = array_merge($arguments, explode(" ", trim($matches[2][$index])));
+			$arguments = array_merge($arguments, explode(' ', trim($matches[2][$index])));
 
 			$boundData = $arguments;
 
-			if (class_exists("\Sleepy\Hook")) {
+			if (class_exists('\Sleepy\Hook')) {
 				$boundData = \Sleepy\Hook::addFilter('render_placeholder_' . strtolower($key), $boundData);
 			}
 
@@ -266,7 +266,7 @@ class Template {
 		include($this->directory . $this->_file . $this->extension);
 		$template = $this->_render(ob_get_clean(), $this->_data);
 
-		if (class_exists("\Sleepy\Hook")) {
+		if (class_exists('\Sleepy\Hook')) {
 			$template = \Sleepy\Hook::addFilter('render_template_' . $this->_file, $template);
 			$template = \Sleepy\Hook::addFilter('render_template', $template);
 		}
@@ -293,7 +293,7 @@ class Template {
 		$placeholder = strtolower($placeholder);
 
 		if (!is_array($value)) {
-			if (class_exists("\Sleepy\Hook")) {
+			if (class_exists('\Sleepy\Hook')) {
 				$value = \Sleepy\Hook::addFilter('bind_placeholder_' . $placeholder, $value);
 			}
 		}
@@ -316,7 +316,7 @@ class Template {
 	public function bindStop($placeholder) {
 		$content = ob_get_clean();
 
-		if (class_exists("\Sleepy\Hook")) {
+		if (class_exists('\Sleepy\Hook')) {
 			$content = \Sleepy\Hook::addFilter('bind_placeholder_' . $placeholder, $content);
 		}
 
@@ -331,7 +331,7 @@ class Template {
 	public function get($key) {
 		$value = $this->_data[$key];
 
-		if (class_exists("\Sleepy\Hook")) {
+		if (class_exists('\Sleepy\Hook')) {
 			\Sleepy\Hook::addFilter('template_get_' . $key, $value);
 		}
 
