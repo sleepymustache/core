@@ -4,9 +4,9 @@ namespace Sleepy;
 /**
  * Provides templating functionality
  *
- * ### Usage
+ * ## Usage
  *
- * ## PHP file: *index.php*
+ * ### PHP file: *index.php*
  *
  * <code>
  *     require_once('include/sleepy.php');
@@ -17,7 +17,7 @@ namespace Sleepy;
  *     $page->show();
  * </code>
  *
- * ## Template file: *\app\templates\default.tpl*
+ * ### Template file: *\app\templates\default.tpl*
  *
  * <code>
  *     <html>
@@ -31,44 +31,57 @@ namespace Sleepy;
  *     </html>
  * </code>
  *
- * ### Changelog
+ * ## Changelog
  *
- * ## Version 1.6
+ * ### Version 1.7
+ * * Updated private prefix (_) for consistency
+ * * Updated documentation
+ *
+ * ### Version 1.6
  * * No longer dependant on Hooks Module
  *
  * @todo add #if
  *
- * @date June 16, 2014
+ * @date June 18, 2016
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.6
+ * @version 1.7
  * @license  http://opensource.org/licenses/MIT
  */
 
 class Template {
 	/**
-	 * string The extension for template files
+	 * The extension for template files
+	 *
+	 * @var string
 	 */
 	public $extension = '.tpl';
 
 	/**
-	 * string The template directory
+	 * The template directory
+	 *
+	 * @var string
 	 */
 	public $directory;
 
 	/**
-	 * string The template file
+	 * The template file
+	 *
+	 * @var string
 	 * @protected
 	 */
 	protected $_file;
 
 	/**
-	 * array The data bound to the template
+	 * The data bound to the template
+	 *
+	 * @var mixed[]
 	 * @protected
 	 */
 	protected $_data = array();
 
 	/**
 	 * The constructor
+	 *
 	 * @param string $template The name of the template
 	 * @param string $basedir  The base directory for template files
 	 */
@@ -95,6 +108,7 @@ class Template {
 
 	/**
 	 * Does the template exist?
+	 *
 	 * @param  string $file Name of template
 	 * @return Bool         True if template exists
 	 * @private
@@ -120,9 +134,11 @@ class Template {
 	/**
 	 * Given a path, the function returns a piece of $arr. For example
 	 * 'name.first' will return $arr['name']['first']
+	 *
 	 * @param  array  $arr  An array to search using the $path
 	 * @param  string $path A path representing the dimensions of the array
 	 * @return mixed        A sub-array or string
+	 * @private
 	 */
 	private function _assignArrayByPath($arr, $path) {
 
@@ -143,9 +159,11 @@ class Template {
 
 	/**
 	 * Renders the template
+	 *
 	 * @param  string $template The template to render
 	 * @param  array $data      The data bound to the template
 	 * @return string           The rendered template
+	 * @private
 	 */
 	private function _render($template, $data) {
 		// Process the includes
@@ -256,7 +274,9 @@ class Template {
 
 	/**
 	 * Parses the template after it's been setup
+	 *
 	 * @return string The rendered template
+	 * @private
 	 */
 	private function _parseTemplate() {
 		$this->_checkTemplate($this->_file);
@@ -276,6 +296,7 @@ class Template {
 
 	/**
 	 * Sets the template to use.
+	 *
 	 * @param [type] $file [description]
 	 */
 	public function setTemplate($file) {
@@ -286,6 +307,7 @@ class Template {
 
 	/**
 	 * Binds data to the template placeholders
+	 *
 	 * @param  string $placeholder   The template placeholder
 	 * @param  mixed  $value         The value that replaced the placeholder
 	 */
@@ -311,6 +333,7 @@ class Template {
 
 	/**
 	 * Stops the buffer that binds data to the template placeholders
+	 *
 	 * @param  string $placeholder   The template placeholder
 	 */
 	public function bindStop($placeholder) {
@@ -325,6 +348,7 @@ class Template {
 
 	/**
 	 * Gets the data for a placeholder
+	 *
 	 * @param  string $placeholder The placeholder
 	 * @return mixed               The data stored in the placeholder
 	 */

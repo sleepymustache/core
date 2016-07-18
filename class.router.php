@@ -4,7 +4,7 @@ namespace Sleepy;
 /**
  * Implements routing functionality based on a URI.
  *
- * ### Usage
+ * ## Usage
  *
  * <code>
  *   \Sleepy\Router::route('/user/{{ id }}/*', function ($route) {
@@ -15,24 +15,29 @@ namespace Sleepy;
  *   });
  * </code>
  *
- * ### Changelog
+ * ## Changelog
  *
- * ## Version 1.0
+ * ### Version 1.1
+ * * updated private prefix (_) for consistency
+ * * updated documentation
+ *
+ * ### Version 1.0
  * * With unit tests in place, we're ready to call this 1.0
  *
- * ## Version 0.4
+ * ### Version 0.4
  * * Simplified interface, thanks @cameff
  *
  * @todo  Document the class and add it to homepage
  *
- * @date October 07, 2014
+ * @date July 18, 2016
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.0
+ * @version 1.1
  * @license  http://opensource.org/licenses/MIT
  */
 class Router {
 	/**
 	 * An array of routes
+	 *
 	 * @var array
 	 * @private
 	 */
@@ -40,30 +45,35 @@ class Router {
 
 	/**
 	 * Has a route been matched?
+	 *
 	 * @var boolean True, if we matched a route
 	 */
 	public static $routeFound = false;
 
 	/**
 	 * The delimiter for the route pattern
+	 *
 	 * @var string
 	 */
 	public static $delimiter = '/';
 
 	/**
 	 * If true, parse the querystring instead of the path
+	 *
 	 * @var boolean
 	 */
 	public static $querystring = false;
 
 	/**
 	 * An array of parameters, either from the path or querystring
+	 *
 	 * @var array
 	 */
 	public static $parameters = array();
 
 	/**
 	 * Gets an array from a string based on Router::$delimeter
+	 *
 	 * @param  string $string a string to explode()
 	 * @return array          an exploded string
 	 */
@@ -81,6 +91,7 @@ class Router {
 
 	/**
 	 * Creates a new route
+	 *
 	 * @param  string   $pattern A pattern to match
 	 * @param  function $func    A callback function
 	 * @return object            \Sleepy\Route()
@@ -99,6 +110,7 @@ class Router {
 
 	/**
 	 * Creates a new route, uses a controller and view
+	 *
 	 * @param  string   $pattern A pattern to match
 	 * @param  function $func    A callback function
 	 * @return object            \Sleepy\Route()
@@ -149,6 +161,7 @@ class Router {
 
 	/**
 	 * Creates a new route
+	 *
 	 * @param  string   $pattern A pattern to match
 	 * @param  function $func    A callback function
 	 * @return object            \Sleepy\Route()
@@ -185,6 +198,7 @@ class Router {
 
 	/**
 	 * Starts parsing the Router::routes
+	 *
 	 * @return boolean true if a route was matched
 	 */
 	public static function start($currentPath='') {
@@ -242,36 +256,42 @@ class Router {
 class _Route {
 	/**
 	 * A list of (pattern ,callbacks)
+	 *
 	 * @var array
 	 */
 	private $_functions = array();
 
 	/**
 	 * The name of the route, MD5 hash of pattern by default
+	 *
 	 * @var string
 	 */
 	public $name;
 
 	/**
 	 * A hash of matched placeholder
-	 * @var array
+	 *
+	 * @var string[]
 	 */
 	public $params;
 
 	/**
 	 * The method that was matched
+	 *
 	 * @var string
 	 */
 	public $method;
 
 	/**
 	 * Returns the string matched with a wildcard
+	 *
 	 * @var string
 	 */
 	public $splat;
 
 	/**
 	 * Cleans the handlebars from placeholders
+	 *
 	 * @param  string $placeholder The full placeholder
 	 * @return string              The stripped placeholder
 	 */
@@ -283,8 +303,9 @@ class _Route {
 
 	/**
 	 * Is this $string a placeholder
-	 * @param  [type]  $string The possible placeholder
-	 * @return boolean         True, if it is a placeholder
+	 *
+	 * @param  string  $string  The possible placeholder
+	 * @return boolean          True, if it is a placeholder
 	 */
 	private function _isPlaceholder($string) {
 		return substr($string, 0,2) == '{{' && substr($string, strlen($string) - 2, 2) == '}}';
@@ -292,9 +313,11 @@ class _Route {
 
 	/**
 	 * Run all the filters for a placeholder
+	 *
 	 * @param  string $key    The placeholder
 	 * @param  string $string The string to parse
 	 * @return string         The parsed string
+	 * @private
 	 */
 	private function _runFilters($key, $string) {
 		if (class_exists('\Sleepy\Hook')) {
@@ -309,7 +332,9 @@ class _Route {
 
 	/**
 	 * Does the pattern have a wildcard?
+	 *
 	 * @return boolean True, if there is a wildcard
+	 * @private
 	 */
 	private function _hasWildcard($pattern) {
 		if (strlen($pattern) == 0) {
@@ -321,9 +346,11 @@ class _Route {
 
 	/**
 	 * Store the variables found in the route
+
 	 * @param  string $key   The placeholder
 	 * @param  string $value The value
 	 * @return boolean       True, if we succeeded
+	 * @private
 	 */
 	private function _storeVariable($key, $value) {
 		if ($value == '') {
@@ -344,8 +371,9 @@ class _Route {
 		return true;
 	}
 
-		/**
+	/**
 	 * Creates a new route
+	 *
 	 * @param string $name Optional.
 	 */
 	public function __construct($name='') {
@@ -354,6 +382,7 @@ class _Route {
 
 	/**
 	 * if URL matches pattern do $func
+	 *
 	 * @param  string   $pattern a pattern with {{ placeholders }}
 	 * @param  function $func    Executes if pattern matches; func($variables)
 	 */
