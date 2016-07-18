@@ -4,20 +4,25 @@ namespace Sleepy;
 /**
  * Provides sleepyMUSTACHE core bootstrap functionality
  *
- * ### Usage
+ * ## Usage
  *
  * <code>
  *   \Sleepy\SM::initialize();
  * </code>
  *
- * ### Changelog
+ * ## Changelog
  *
- * ## Version 1.0
+ * ### Version 1.1
+ * * Updated private previx (_) for consistency
+ * * Updated documentation
+ * * Added teamsite fixes
+ *
+ * ### Version 1.0
  * * Initial commit
  *
- * @date September 26, 2014
+ * @date July 18, 2016
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.0
+ * @version 1.1
  * @license http://opensource.org/licenses/MIT
  */
 class SM {
@@ -25,6 +30,9 @@ class SM {
 
 	public static $is_initialized = false;
 
+	/**
+	 * Prevent class from being cloned
+	 */
 	private function __clone() {}
 
 	/**
@@ -36,6 +44,17 @@ class SM {
 
 		// Enable sessions
 		session_start();
+		
+		// Teamsite fixes
+		if (@include_once('Webkit/init.php')) {
+			define('TEAMSITE', true);
+			$_SERVER['DOCUMENT_ROOT'] = $docroot;
+		} else {
+			$WHG_DB_HOST = "";
+			$WHG_DB_USER = "";
+			$WHG_DB_PASSWD = "";
+			$WHG_DB_REPLDB = "";
+		}
 
 		// If we are not setup yet, forward the user to the setup page
 		if (@!include_once($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'settings.php')) {

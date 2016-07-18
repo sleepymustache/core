@@ -13,13 +13,13 @@ if (\Sleepy\SM::isENV(STAGE_URL)) {
 
 	// Base Directory/URL
 	define('URLBASE', '/');
-	define('DIRBASE', realpath(dirname(__FILE__)) . '/../');
+	define('DIRBASE', $_SESSION['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'app');
 
 	// DB Credentials
-	define ('DBHOST', '');
-	define ('DBUSER', '');
-	define ('DBPASS', '');
-	define ('DBNAME', '');
+	define ("DBHOST", $WHG_DB_HOST);
+	define ("DBUSER", $WHG_DB_USER);
+	define ("DBPASS", $WHG_DB_PASSWD);
+	define ("DBNAME", $WHG_DB_REPLDB);
 
 	// Email information
 	define('EMAIL_FROM', '');
@@ -34,13 +34,13 @@ if (\Sleepy\SM::isENV(STAGE_URL)) {
 
 	// Base Directory/URL
 	define('URLBASE', '/');
-	define('DIRBASE', realpath(dirname(__FILE__)) . '/../');
+	define('DIRBASE', $_SESSION['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'app');
 
 	// DB Credentials
-	define ('DBHOST', '');
-	define ('DBUSER', '');
-	define ('DBPASS', '');
-	define ('DBNAME', '');
+	define ("DBHOST", $WHG_DB_HOST);
+	define ("DBUSER", $WHG_DB_USER);
+	define ("DBPASS", $WHG_DB_PASSWD);
+	define ("DBNAME", $WHG_DB_REPLDB);
 
 	// Email information
 	define('EMAIL_FROM', '');
@@ -55,13 +55,13 @@ if (\Sleepy\SM::isENV(STAGE_URL)) {
 
 	// Base Directory/URL
 	define('URLBASE', '/');
-	define('DIRBASE', realpath(dirname(__FILE__)) . '/../');
+	define('DIRBASE', $_SESSION['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'app');
 
 	// DB Credentials
-	define ('DBHOST', '');
-	define ('DBUSER', '');
-	define ('DBPASS', '');
-	define ('DBNAME', '');
+	define ("DBHOST", $WHG_DB_HOST);
+	define ("DBUSER", $WHG_DB_USER);
+	define ("DBPASS", $WHG_DB_PASSWD);
+	define ("DBNAME", $WHG_DB_REPLDB);
 
 	// Email information
 	define('EMAIL_FROM', '');

@@ -7,7 +7,7 @@ namespace Sleepy;
  * You can create modules to hooks by adding php files into the
  * *\app\modules\enabled* directory.
  *
- * ### Usage
+ * ## Usage
  * <code>
  * 	// add a hook point
  * 	$content = Hook::addFilter('update_content', $_POST['content']);
@@ -21,19 +21,23 @@ namespace Sleepy;
  * 	Hook::applyFilter("update_content", "clean_html");
  * </code>
  *
- * ### Changelog
+ * ## Changelog
  *
- * ## Version 1.1
+ * ### Version 1.2
+ * * Updated privacy prefix (_) for consistency
+ * * Fixed Hook::_load method for teamsite bug
+ *
+ * ### Version 1.1
  * * Added the date section to the documentation
  *
- * ## Version 1.0
+ * ### Version 1.0
  * * static class pattern fixes
  * * multiple module directories
  * * crawls subdirectories of module directories
  *
- * @date June 16, 2014
+ * @date July 18, 2016
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.1
+ * @version 1.2
  * @license  http://opensource.org/licenses/MIT
  *
  * @todo devise a better way of passing multiple parameters to hooks, perhaps
@@ -42,24 +46,38 @@ namespace Sleepy;
 class Hook {
 
 	/**
-	 * bool Has this been initialized?
+	 * Has this been initialized?
+	 *
+	 * @var bool
 	 * @private
 	 */
-	private static $initialized = false;
+	private static $_initialized = false;
 
 	/**
-	 * array string An array of filters
+	 * An array of filters
+	 *
+	 * @var _Filter[]
 	 * @private
 	 */
-	private static $filters = array();
+	private static $_filters = array();
 
 	/**
-	 * array string The directories where the modules are stored
+	 * The directories where the modules are stored
+	 *
+	 * @var string
 	 */
-	public static $directories;
+	public static $directories = array();
 
 	/**
-	 * Private constructor ensure there are no instances
+	 * Prevent class from being cloned
+	 *
+	 * @private
+	 */
+	private function __clone() {}
+
+	/**
+	 * The constructor is private to ensure we only have one instance
+	 * 
 	 * @private
 	 */
 	private function __construct() {}
@@ -71,11 +89,11 @@ class Hook {
 	* @static
 	* @return object
 	*/
-	private static function initialize() {
-		if (!self::$initialized) {
+	private static function _initialize() {
+		if (!self::$_initialized) {
 			self::$directories[] = DIRBASE . '/modules/';
-			self::$initialized = true;
-			self::load();
+			self::$_initialized = true;
+			self::_load();
 		}
 	}
 
@@ -86,34 +104,32 @@ class Hook {
 	 * @static
 	 * @return void
 	 */
-	private static function load() {
-		$all = '';
+	private static function _load() {
+		$directories = self::$directories;
 
 		// get all subdirectories
 		foreach (self::$directories as $directory) {
-			$add = glob($directory . '/*' , GLOB_ONLYDIR);
+			$subdirectories = glob($directory . '/*' , GLOB_ONLYDIR);
 
-			if (is_array($all)) {
-				$all = array_merge($all, $add);
-			} else {
-				$all = $add;
+			if (is_array($subdirectories)) {
+				$directories = array_merge($directories, $subdirectories);
 			}
 		}
 
-		$all = array_merge($all, self::$directories);
-
 		// include all php files
-		foreach ($all as $directory) {
+		foreach ($directories as $directory) {
 			$files = glob($directory . '/*.php');
 
-			if (is_array($files)) {
-				foreach($files as $file) {
-					if (strpos($file, '_test.php') !== false) {
-						// This is a test file
-					} else {
-						require_once($file);
-					}
+			if (!is_array($files)) {
+				continue;
+			}
+			
+			foreach($files as $file) {
+				if (strpos($file, '_test.php') !== false) {
+					continue;
 				}
+
+				require_once($file);
 			}
 		}
 	}
@@ -128,19 +144,19 @@ class Hook {
 	 * @return void
 	 */
 	public static function applyFilter($name, $function) {
-		self::initialize();
+		self::_initialize();
 
 		$args = func_get_args();
 
 		array_shift($args);
 		array_shift($args);
 
-		if (!isset(self::$filters[$name])) {
-			self::$filters[$name] = new _Filter ($name);
+		if (!isset(self::$_filters[$name])) {
+			self::$_filters[$name] = new _Filter ($name);
 		}
 
 		// add the function to the filter
-		self::$filters[$name]->add($function, $args);
+		self::$_filters[$name]->add($function, $args);
 	}
 
 	/**
@@ -152,10 +168,10 @@ class Hook {
 	 * @return void
 	 */
 	public static function addFilter($name, $value) {
-		self::initialize();
+		self::_initialize();
 
 		// If there are no functions to run
-		if (!isset(self::$filters[$name])) {
+		if (!isset(self::$_filters[$name])) {
 			if (is_array($value)) {
 				return $value[0];
 			} else {
@@ -163,7 +179,7 @@ class Hook {
 			}
 		}
 
-		foreach (self::$filters[$name]->functions as $function => $args) {
+		foreach (self::$_filters[$name]->functions as $function => $args) {
 			if (is_array($value)) {
 				$returned = call_user_func_array($function, $value);
 			} else {
@@ -223,16 +239,21 @@ class Hook {
 class _Filter {
 	/**
 	 * The name of the filter
+	 *
+	 * @var string
 	 */
 	public $name;
 
 	/**
-	 * array a list of functions
+	 * A list of functions to execute
+	 *
+	 * @var [string[]]
 	 */
 	public $functions;
 
 	/**
 	 * Constructor
+	 *
 	 * @param string $name The name of the filter
 	 */
 	public function __construct($name) {
@@ -241,6 +262,7 @@ class _Filter {
 
 	/**
 	 * Adds a function to this filter
+	 *
 	 * @param string $function The function to call
 	 * @param array $args An array of parameters
 	 */
