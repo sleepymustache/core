@@ -23,18 +23,18 @@ namespace Sleepy;
  *
  * ## Changelog
  *
+ * ### Version 1.10
+ * * Added the ability to debug straight to the JS console
+
  * ### Version 1.9
  * * Updated private suffix (_) and documentation for consistency
  *
  * ### Version 1.8
  * * Added namespacing
  *
- * ### Version 1.7
- * * Added the date section to the documentation
- *
- * @date July 18, 2016
+ * @date April 19, 2017
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.9
+ * @version 1.10
  * @license  http://opensource.org/licenses/MIT
  */
 
@@ -54,6 +54,13 @@ class Debug {
 	 * @private
 	 */
 	private static $_dbPDO;
+
+	/**
+	 * Enable output to JS Console
+	 *
+	 * @var bool
+	 */
+	public static $enable_console = false;
 
 	/**
 	 * Enable output to screen
@@ -216,6 +223,33 @@ class Debug {
 	}
 
 	/**
+	 * Displays debug information in JS Console
+	 *
+	 * @param mixed $var Anything you want to log
+	 * @return bool
+	 * @todo  create a hook so the dev can create custom views when outputting
+	 *        debug data.
+	 * @private
+	 */
+	private static function console($var) {
+		if (!self::$enable_console) {
+			return false;
+		}
+
+		echo '<script>console.log(';
+
+		if (is_array($var) || is_object($var)) {
+			echo json_encode($var);
+		} else {
+			echo "'{$var}'";
+		}
+
+		echo ');</script>';
+
+		return true;
+	}
+
+	/**
 	 * sets the Exception Handler
 	 */
 	public function setHandler() {
@@ -334,6 +368,10 @@ class Debug {
 
 		self::_initialize();
 
+		if (self::$enable_console) {
+			$result = $result && self::$_instance->console($var);
+		}
+
 		if (self::$enable_send) {
 			$result = $result && self::$_instance->send($var);
 		}
@@ -346,7 +384,8 @@ class Debug {
 			$result = $result && self::$_instance->show($var);
 		}
 
-		if (!self::$enable_show &&
+		if (!self::$enable_console &&
+			!self::$enable_show &&
 			!self::$enable_send &&
 			!self::$enable_log) {
 			$result = false;
@@ -361,9 +400,10 @@ class Debug {
 	 * @return void
 	 */
 	public static function disable() {
-		self::$enable_send = false;
-		self::$enable_log = false;
-		self::$enable_show = false;
+		self::$enable_console = false;
+		self::$enable_log     = false;
+		self::$enable_send    = false;
+		self::$enable_show    = false;
 	}
 
 	/**
