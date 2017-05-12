@@ -44,7 +44,7 @@ class SM {
 
 		// Enable sessions
 		session_start();
-		
+
 		// Teamsite fixes
 		if (@include_once('Webkit/init.php')) {
 			define('TEAMSITE', true);
@@ -118,7 +118,7 @@ class SM {
 	 */
 	public static function isENV($str) {
 		foreach (explode(',' , $str) as $url) {
-			if (stripos($_SERVER['SERVER_NAME'], trim($url)) !== false)
+			if (stripos($_SERVER['SERVER_NAME'], $url) !== false)
 				return true;
 		}
 
