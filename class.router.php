@@ -210,6 +210,8 @@ class Router {
 
 		if (self::$querystring) {
 			$currentPath = str_replace('/?q=', '', $currentPath);
+		} else {
+			$currentPath = preg_replace('/\?.*/', '', $currentPath);
 		}
 
 		// Get all parameters
