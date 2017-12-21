@@ -9,16 +9,16 @@ namespace Sleepy;
  *
  * ## Usage
  * <code>
- * 	// add a hook point
- * 	$content = Hook::addFilter('update_content', $_POST['content']);
+ *   // add a hook point
+ *   $content = Hook::addFilter('update_content', $_POST['content']);
  *
- * 	// Add a module to the hook point--in /modules/<moduleName.php>
- * 	function clean_html ($html) {
- * 		$c = htmlentities(trim($html), ENT_NOQUOTES, "UTF-8", false);
- * 		return $c;
- * 	}
+ *   // Add a module to the hook point--in /modules/<moduleName.php>
+ *   function clean_html ($html) {
+ *     $c = htmlentities(trim($html), ENT_NOQUOTES, "UTF-8", false);
+ *     return $c;
+ *   }
  *
- * 	Hook::applyFilter("update_content", "clean_html");
+ *   Hook::applyFilter("update_content", "clean_html");
  * </code>
  *
  * ## Changelog
@@ -45,173 +45,173 @@ namespace Sleepy;
  */
 class Hook {
 
-	/**
-	 * Has this been initialized?
-	 *
-	 * @var bool
-	 * @private
-	 */
-	private static $_initialized = false;
+  /**
+   * Has this been initialized?
+   *
+   * @var bool
+   * @private
+   */
+  private static $_initialized = false;
 
-	/**
-	 * An array of filters
-	 *
-	 * @var _Filter[]
-	 * @private
-	 */
-	private static $_filters = array();
+  /**
+   * An array of filters
+   *
+   * @var _Filter[]
+   * @private
+   */
+  private static $_filters = array();
 
-	/**
-	 * The directories where the modules are stored
-	 *
-	 * @var string
-	 */
-	public static $directories = array();
+  /**
+   * The directories where the modules are stored
+   *
+   * @var string
+   */
+  public static $directories = array();
 
-	/**
-	 * Prevent class from being cloned
-	 *
-	 * @private
-	 */
-	private function __clone() {}
+  /**
+   * Prevent class from being cloned
+   *
+   * @private
+   */
+  private function __clone() {}
 
-	/**
-	 * The constructor is private to ensure we only have one instance
-	 * 
-	 * @private
-	 */
-	private function __construct() {}
+  /**
+   * The constructor is private to ensure we only have one instance
+   *
+   * @private
+   */
+  private function __construct() {}
 
-	/**
-	* Return instance or create initial instance
-	*
-	* @private
-	* @static
-	* @return object
-	*/
-	private static function _initialize() {
-		if (!self::$_initialized) {
-			self::$directories[] = DIRBASE . '/modules/';
-			self::$_initialized = true;
-			self::_load();
-		}
-	}
+  /**
+  * Return instance or create initial instance
+  *
+  * @private
+  * @static
+  * @return object
+  */
+  private static function _initialize() {
+    if (!self::$_initialized) {
+      self::$directories[] = DIRBASE . '/modules/';
+      self::$_initialized = true;
+      self::_load();
+    }
+  }
 
-	/**
-	 * Loads all the modules
-	 *
-	 * @private
-	 * @static
-	 * @return void
-	 */
-	private static function _load() {
-		$directories = self::$directories;
+  /**
+   * Loads all the modules
+   *
+   * @private
+   * @static
+   * @return void
+   */
+  private static function _load() {
+    $directories = self::$directories;
 
-		// get all subdirectories
-		foreach (self::$directories as $directory) {
-			$subdirectories = glob($directory . '/*' , GLOB_ONLYDIR);
+    // get all subdirectories
+    foreach (self::$directories as $directory) {
+      $subdirectories = glob($directory . '/*' , GLOB_ONLYDIR);
 
-			if (is_array($subdirectories)) {
-				$directories = array_merge($directories, $subdirectories);
-			}
-		}
+      if (is_array($subdirectories)) {
+        $directories = array_merge($directories, $subdirectories);
+      }
+    }
 
-		// include all php files
-		foreach ($directories as $directory) {
-			$files = glob($directory . '/*.php');
+    // include all php files
+    foreach ($directories as $directory) {
+      $files = glob($directory . '/*.php');
 
-			if (!is_array($files)) {
-				continue;
-			}
-			
-			foreach($files as $file) {
-				if (strpos($file, '_test.php') !== false) {
-					continue;
-				}
+      if (!is_array($files)) {
+        continue;
+      }
 
-				require_once($file);
-			}
-		}
-	}
+      foreach($files as $file) {
+        if (strpos($file, '_test.php') !== false) {
+          continue;
+        }
 
-	/**
-	 * Adds a new filter to a filter-type hook point
-	 *
-	 * @param  string $name     [description]
-	 * @param  string $function [description]
-	 * @param  int $args        [description]
-	 * @static
-	 * @return void
-	 */
-	public static function applyFilter($name, $function) {
-		self::_initialize();
+        require_once($file);
+      }
+    }
+  }
 
-		$args = func_get_args();
+  /**
+   * Adds a new filter to a filter-type hook point
+   *
+   * @param  string $name     [description]
+   * @param  string $function [description]
+   * @param  int $args        [description]
+   * @static
+   * @return void
+   */
+  public static function applyFilter($name, $function) {
+    self::_initialize();
 
-		array_shift($args);
-		array_shift($args);
+    $args = func_get_args();
 
-		if (!isset(self::$_filters[$name])) {
-			self::$_filters[$name] = new _Filter ($name);
-		}
+    array_shift($args);
+    array_shift($args);
 
-		// add the function to the filter
-		self::$_filters[$name]->add($function, $args);
-	}
+    if (!isset(self::$_filters[$name])) {
+      self::$_filters[$name] = new _Filter ($name);
+    }
 
-	/**
-	 * Adds a new filter-type hook point
-	 *
-	 * @param mixed  $name  [description]
-	 * @param string $value [description]
-	 * @static
-	 * @return void
-	 */
-	public static function addFilter($name, $value) {
-		self::_initialize();
+    // add the function to the filter
+    self::$_filters[$name]->add($function, $args);
+  }
 
-		// If there are no functions to run
-		if (!isset(self::$_filters[$name])) {
-			if (is_array($value)) {
-				return $value[0];
-			} else {
-				return $value;
-			}
-		}
+  /**
+   * Adds a new filter-type hook point
+   *
+   * @param mixed  $name  [description]
+   * @param string $value [description]
+   * @static
+   * @return void
+   */
+  public static function addFilter($name, $value) {
+    self::_initialize();
 
-		foreach (self::$_filters[$name]->functions as $function => $args) {
-			if (is_array($value)) {
-				$returned = call_user_func_array($function, $value);
-			} else {
-				$returned = call_user_func($function, $value);
-			}
-		}
+    // If there are no functions to run
+    if (!isset(self::$_filters[$name])) {
+      if (is_array($value)) {
+        return $value[0];
+      } else {
+        return $value;
+      }
+    }
 
-		return $returned;
-	}
+    foreach (self::$_filters[$name]->functions as $function => $args) {
+      if (is_array($value)) {
+        $returned = call_user_func_array($function, $value);
+      } else {
+        $returned = call_user_func($function, $value);
+      }
+    }
 
-	/**
-	 * Adds a new function to a action-type hook point
-	 *
-	 * @param  string $name     Name of filter
-	 * @param  string $function Function to call
-	 * @static
-	 * @return void
-	 */
-	public static function doAction($name, $function) {
-		call_user_func_array('self::applyFilter', func_get_args());
-	}
+    return $returned;
+  }
 
-	/**
-	 * Adds a new action-type hook point
-	 *
-	 * @param string $name [description]
-	 * @static
-	 * @return void
-	 */
-	public static function addAction($name) {
-		self::addFilter($name, '');
-	}
+  /**
+   * Adds a new function to a action-type hook point
+   *
+   * @param  string $name     Name of filter
+   * @param  string $function Function to call
+   * @static
+   * @return void
+   */
+  public static function doAction($name, $function) {
+    call_user_func_array('self::applyFilter', func_get_args());
+  }
+
+  /**
+   * Adds a new action-type hook point
+   *
+   * @param string $name [description]
+   * @static
+   * @return void
+   */
+  public static function addAction($name) {
+    self::addFilter($name, '');
+  }
 }
 
 /**
@@ -237,36 +237,36 @@ class Hook {
  */
 
 class _Filter {
-	/**
-	 * The name of the filter
-	 *
-	 * @var string
-	 */
-	public $name;
+  /**
+   * The name of the filter
+   *
+   * @var string
+   */
+  public $name;
 
-	/**
-	 * A list of functions to execute
-	 *
-	 * @var [string[]]
-	 */
-	public $functions;
+  /**
+   * A list of functions to execute
+   *
+   * @var string[]
+   */
+  public $functions;
 
-	/**
-	 * Constructor
-	 *
-	 * @param string $name The name of the filter
-	 */
-	public function __construct($name) {
-		$this->name = $name;
-	}
+  /**
+   * Constructor
+   *
+   * @param string $name The name of the filter
+   */
+  public function __construct($name) {
+    $this->name = $name;
+  }
 
-	/**
-	 * Adds a function to this filter
-	 *
-	 * @param string $function The function to call
-	 * @param array $args An array of parameters
-	 */
-	public function add($function, $args) {
-		$this->functions[$function] = $args;
-	}
+  /**
+   * Adds a function to this filter
+   *
+   * @param string $function The function to call
+   * @param array $args An array of parameters
+   */
+  public function add($function, $args) {
+    $this->functions[$function] = $args;
+  }
 }
