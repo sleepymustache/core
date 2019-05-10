@@ -12,6 +12,9 @@ namespace Sleepy;
  *
  * ## Changelog
  *
+ * ### Version 1.3
+ * * No longer mention old setup
+ *
  * ### Version 1.2
  * * Updated documentation
  *
@@ -23,21 +26,21 @@ namespace Sleepy;
  * ### Version 1.0
  * * Initial commit
  *
- * @date July 21, 2017
+ * @date May 9, 2019
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.2
+ * @version 1.3
  * @license http://opensource.org/licenses/MIT
  */
 class SM {
   /**
-   * Undocumented variable
+   * Stores the instance of SM when initialized
    *
    * @var SM
    */
   private static $_instance;
 
   /**
-   * Undocumented variable
+   * Is sleepyMUSTACHE initialized?
    *
    * @var boolean
    */
@@ -73,7 +76,7 @@ class SM {
       $WHG_DB_REPLDB = "";
     }
 
-    // If we are not setup yet, forward the user to the setup page
+    // Check for the settings overide in the root
     if (@!include_once($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'settings.php')) {
       include_once('settings.php');
     }

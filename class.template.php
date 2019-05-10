@@ -33,6 +33,9 @@ namespace Sleepy;
  *
  * ## Changelog
  *
+ * ### Version 1.8
+ * * Allow Template::bind() to take an array to bind multiple values at once
+ *
  * ### Version 1.7
  * * Updated private prefix (_) for consistency
  * * Updated documentation
@@ -42,9 +45,9 @@ namespace Sleepy;
  *
  * @todo add #if
  *
- * @date June 18, 2016
+ * @date May 9, 2019
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.7
+ * @version 1.8
  * @license  http://opensource.org/licenses/MIT
  */
 
@@ -341,20 +344,28 @@ class Template {
   /**
    * Binds data to the template placeholders
    *
-   * @param  string $placeholder The template placeholder
-   * @param  mixed  $value       The value that replaced the placeholder
+   * @param  mixed $placeholder The template placeholder
+   * @param  mixed $value       The value that replaced the placeholder
    * @return void
    */
-  public function bind($placeholder, $value) {
-    $placeholder = strtolower($placeholder);
-
-    if (!is_array($value)) {
-      if (class_exists('\Sleepy\Hook')) {
-        $value = \Sleepy\Hook::addFilter('bind_placeholder_' . $placeholder, $value);
-      }
+  public function bind($placeholder, $value='') {
+    if (!is_array($placeholder)) {
+      $placeholder = array(
+        $placeholder => $value
+      );
     }
 
-    $this->_data[trim($placeholder)] = $value;
+    foreach($placeholder as $key => $value) {
+      $key = strtolower($key);
+
+      if (!is_array($value)) {
+        if (class_exists('\Sleepy\Hook')) {
+          $value = \Sleepy\Hook::addFilter('bind_placeholder_' . $key, $value);
+        }
+      }
+
+      $this->_data[trim($key)] = $value;
+    }
   }
 
   /**
