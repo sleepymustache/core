@@ -17,6 +17,9 @@ namespace Sleepy;
  *
  * ## Changelog
  *
+ * ### Version 1.2
+ * * Renamed _Route to Route to help with Typehinting
+ *
  * ### Version 1.1
  * * updated private prefix (_) for consistency
  * * updated documentation
@@ -29,9 +32,9 @@ namespace Sleepy;
  *
  * @todo  Document the class and add it to homepage
  *
- * @date July 18, 2016
+ * @date May 15, 2019
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.1
+ * @version 1.2
  * @license  http://opensource.org/licenses/MIT
  */
 class Router {
