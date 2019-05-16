@@ -98,9 +98,9 @@ class Router {
    */
   public static function route($pattern, $func) {
     if (is_array($pattern)) {
-      $route = new _Route(md5($pattern[0]));
+      $route = new Route(md5($pattern[0]));
     } else {
-      $route = new _Route(md5($pattern));
+      $route = new Route(md5($pattern));
     }
 
     array_push(self::$_routes, $route);
@@ -167,7 +167,7 @@ class Router {
    * @return object            \Sleepy\Route()
    */
   public static function redirect($controller, $action='index', $params='') {
-    $route = new _Route(md5("{{ $controller }}/{{ $action }}/{{ id }}/*"));
+    $route = new Route(md5("{{ $controller }}/{{ $action }}/{{ id }}/*"));
     $route->params = $params;
 
     $controller_file = $_SERVER['DOCUMENT_ROOT'] . '/app/controllers/';
@@ -255,7 +255,7 @@ class Router {
  * @license  http://opensource.org/licenses/MIT
  * @internal
  */
-class _Route {
+class Route {
   /**
    * A list of (pattern ,callbacks)
    *
