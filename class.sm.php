@@ -86,7 +86,7 @@ class SM {
     require_once('class.router.php');
 
     ob_start();
-    \Sleepy\Hook::addAction('sleepy_preprocess');
+    Hook::addAction('sleepy_preprocess');
 
     // Send the encoding ahead of time to speed up rendering
     header('Content-Type: text/html; charset=utf-8');
@@ -98,8 +98,8 @@ class SM {
    * @return void
    */
   public function __destruct() {
-    echo \Sleepy\Hook::addFilter('sleepy_render', ob_get_clean());
-    \Sleepy\Hook::addAction('sleepy_postprocess');
+    echo Hook::addFilter('sleepy_render', ob_get_clean());
+    Hook::addAction('sleepy_postprocess');
   }
 
   /**

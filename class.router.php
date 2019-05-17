@@ -7,7 +7,7 @@ namespace Sleepy;
  * ## Usage
  *
  * <code>
- *   \Sleepy\Router::route('/user/{{ id }}/*', function ($route) {
+ *   Router::route('/user/{{ id }}/*', function ($route) {
  *     echo "The route uses the pattern: ", $route->pattern;
  *     echo "Route was matched using method: ", $route->method;
  *     echo "The wildcard matched: ", $route->splat;
@@ -325,11 +325,11 @@ class Route {
    * @return string         The parsed string
    */
   private function _runFilters($key, $string) {
-    if (class_exists('\Sleepy\Hook')) {
-      $string = \Sleepy\Hook::addFilter('route_parameters', $string);
-      $string = \Sleepy\Hook::addFilter('route_parameter_' . $key, $string);
-      $string = \Sleepy\Hook::addFilter('route_' . $this->name . '_parameters', $string);
-      $string = \Sleepy\Hook::addFilter('route_' . $this->name . '_parameter_' . $key, $string);
+    if (class_exists('Hook')) {
+      $string = Hook::addFilter('route_parameters', $string);
+      $string = Hook::addFilter('route_parameter_' . $key, $string);
+      $string = Hook::addFilter('route_' . $this->name . '_parameters', $string);
+      $string = Hook::addFilter('route_' . $this->name . '_parameter_' . $key, $string);
     }
 
     return $string;
@@ -460,15 +460,15 @@ class Route {
     }
 
     if ($noMatch) {
-      if (class_exists('\Sleepy\Hook')) {
-        \Sleepy\Hook::addAction('route_failed');
-        \Sleepy\Hook::addAction('route_failed_' . $this->name);
+      if (class_exists('Hook')) {
+        Hook::addAction('route_failed');
+        Hook::addAction('route_failed_' . $this->name);
       }
     } else {
       // Call route_start actions
-      if (class_exists('\Sleepy\Hook')) {
-        \Sleepy\Hook::addAction('route_start');
-        \Sleepy\Hook::addAction('route_start_' . $this->name);
+      if (class_exists('Hook')) {
+        Hook::addAction('route_start');
+        Hook::addAction('route_start_' . $this->name);
       }
 
       $this->pattern = $rawPattern;
@@ -476,9 +476,9 @@ class Route {
       $func($this);
 
       // Call route_end actions
-      if (class_exists('\Sleepy\Hook')) {
-        \Sleepy\Hook::addAction('route_end');
-        \Sleepy\Hook::addAction('route_end_' . $this->name);
+      if (class_exists('Hook')) {
+        Hook::addAction('route_end');
+        Hook::addAction('route_end_' . $this->name);
       }
     }
 

@@ -88,8 +88,8 @@ class Template {
    * @return void
    */
   public function __construct($template='', $basedir='') {
-    if (class_exists('\Sleepy\Hook')) {
-      \Sleepy\Hook::addAction('template_start');
+    if (class_exists('Hook')) {
+      Hook::addAction('template_start');
     }
 
     // If they didn't pass a basedir then try the default
@@ -168,8 +168,8 @@ class Template {
     $template = $this->_renderInclude($template);
     $template = $this->_renderEach($template, $data);
 
-    if (class_exists('\Sleepy\Hook')) {
-      $template = \Sleepy\Hook::addFilter('prerender_template', $template);
+    if (class_exists('Hook')) {
+      $template = Hook::addFilter('prerender_template', $template);
     }
 
     $template = $this->_renderPlaceholder($template, $data);
@@ -233,8 +233,8 @@ class Template {
         if (is_array($in[0])) {
 
           // Allow hooks to edit the data
-          if (class_exists('\Sleepy\Hook')) {
-            $in = \Sleepy\Hook::addFilter('template_each_array', array($in));
+          if (class_exists('Hook')) {
+            $in = Hook::addFilter('template_each_array', array($in));
           }
 
           $iterator = 0;
@@ -242,9 +242,9 @@ class Template {
           foreach ($in as $new_data) {
             $iterator++;
 
-            if (class_exists('\Sleepy\Hook')) {
-              $new_data = \Sleepy\Hook::addFilter('template_each', array($new_data));
-              $new_data = \Sleepy\Hook::addFilter('template_each_' . $forin['for'], array($new_data));
+            if (class_exists('Hook')) {
+              $new_data = Hook::addFilter('template_each', array($new_data));
+              $new_data = Hook::addFilter('template_each_' . $forin['for'], array($new_data));
             }
 
             $new_data['iterator'] = $iterator;
@@ -292,8 +292,8 @@ class Template {
 
       $boundData = $arguments;
 
-      if (class_exists('\Sleepy\Hook')) {
-        $boundData = \Sleepy\Hook::addFilter('render_placeholder_' . strtolower($key), $boundData);
+      if (class_exists('Hook')) {
+        $boundData = Hook::addFilter('render_placeholder_' . strtolower($key), $boundData);
       }
 
       // Some filters might take arrays and return only a single value, if
@@ -321,9 +321,9 @@ class Template {
     include($this->directory . $this->_file . $this->extension);
     $template = $this->_render(ob_get_clean(), $this->_data);
 
-    if (class_exists('\Sleepy\Hook')) {
-      $template = \Sleepy\Hook::addFilter('render_template_' . $this->_file, $template);
-      $template = \Sleepy\Hook::addFilter('render_template', $template);
+    if (class_exists('Hook')) {
+      $template = Hook::addFilter('render_template_' . $this->_file, $template);
+      $template = Hook::addFilter('render_template', $template);
     }
 
     return $template;
@@ -359,8 +359,8 @@ class Template {
       $key = strtolower($key);
 
       if (!is_array($value)) {
-        if (class_exists('\Sleepy\Hook')) {
-          $value = \Sleepy\Hook::addFilter('bind_placeholder_' . $key, $value);
+        if (class_exists('Hook')) {
+          $value = Hook::addFilter('bind_placeholder_' . $key, $value);
         }
       }
 
@@ -387,8 +387,8 @@ class Template {
   public function bindStop($placeholder) {
     $content = ob_get_clean();
 
-    if (class_exists('\Sleepy\Hook')) {
-      $content = \Sleepy\Hook::addFilter('bind_placeholder_' . $placeholder, $content);
+    if (class_exists('Hook')) {
+      $content = Hook::addFilter('bind_placeholder_' . $placeholder, $content);
     }
 
     $this->_data[trim(strtolower($placeholder))] = $content;
@@ -403,8 +403,8 @@ class Template {
   public function get($key) {
     $value = $this->_data[$key];
 
-    if (class_exists('\Sleepy\Hook')) {
-      \Sleepy\Hook::addFilter('template_get_' . $key, $value);
+    if (class_exists('Hook')) {
+      Hook::addFilter('template_get_' . $key, $value);
     }
 
     return $value;
