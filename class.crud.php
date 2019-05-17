@@ -41,6 +41,9 @@ abstract class CRUD extends Controller {
    */
   public function index(Route $route) : View {
     switch ($route->method) {
+      case 'OPTIONS':
+        http_response_code(200);
+        return new View(new Model(), 'default');
       case 'POST':
         http_response_code(201);
         return $this->create($route);
