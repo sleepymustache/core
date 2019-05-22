@@ -18,21 +18,23 @@ require_once('class.template.php');
  * </code>
  *
  * ## Changelog
+ * 
+ * ### Version 2.0
+ * * Views are now templates
  *
  * ### Version 1.0
  * * Initial Release
  *
- * @date May 17, 2019
+ * @date May 21, 2019
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.0
+ * @version 2.0
  * @license  http://opensource.org/licenses/MIT
  */
   class View {
-    public function __construct(Model $model, string $viewfile, string $template="default") {
-      $this->viewfile = $viewfile;
+    public function __construct(Model $model, string $template="default") {
       $this->model = $model;
 
-      $this->page = new Template($template);
+      $this->page = new Template($template, DIRBASE . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR);
       $this->page->model = &$this->model;
       $this->modelToPlaceholder($model);
       $this->render($model);
@@ -45,7 +47,6 @@ require_once('class.template.php');
      * @return void
      */
     private function render($model) {
-      require_once("app/views/{$this->viewfile}.php");
       $this->page->show();
     }
 
