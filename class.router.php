@@ -221,7 +221,7 @@ class Router {
     self::$parameters = self::getArray($currentPath);
 
     foreach (self::$_routes as $route) {
-      $route->method = $_SERVER['REQUEST_METHOD'];
+      $route->method = (isset($_SERVER['REQUEST_METHOD'])) ? $_SERVER['REQUEST_METHOD'] : 'GET';
       $route->execute();
     }
 

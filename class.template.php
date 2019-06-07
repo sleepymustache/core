@@ -88,7 +88,7 @@ class Template {
    * @return void
    */
   public function __construct($template='', $basedir='') {
-    if (class_exists('Hook')) {
+    if (class_exists('\Sleepy\Hook')) {
       Hook::addAction('template_start');
     }
 
@@ -168,7 +168,7 @@ class Template {
     $template = $this->_renderInclude($template);
     $template = $this->_renderEach($template, $data);
 
-    if (class_exists('Hook')) {
+    if (class_exists('\Sleepy\Hook')) {
       $template = Hook::addFilter('prerender_template', $template);
     }
 
@@ -233,7 +233,7 @@ class Template {
         if (is_array($in[0])) {
 
           // Allow hooks to edit the data
-          if (class_exists('Hook')) {
+          if (class_exists('\Sleepy\Hook')) {
             $in = Hook::addFilter('template_each_array', array($in));
           }
 
@@ -242,7 +242,7 @@ class Template {
           foreach ($in as $new_data) {
             $iterator++;
 
-            if (class_exists('Hook')) {
+            if (class_exists('\Sleepy\Hook')) {
               $new_data = Hook::addFilter('template_each', array($new_data));
               $new_data = Hook::addFilter('template_each_' . $forin['for'], array($new_data));
             }
@@ -292,7 +292,7 @@ class Template {
 
       $boundData = $arguments;
 
-      if (class_exists('Hook')) {
+      if (class_exists('\Sleepy\Hook')) {
         $boundData = Hook::addFilter('render_placeholder_' . strtolower($key), $boundData);
       }
 
@@ -321,7 +321,7 @@ class Template {
     include($this->directory . $this->_file . $this->extension);
     $template = $this->_render(ob_get_clean(), $this->_data);
 
-    if (class_exists('Hook')) {
+    if (class_exists('\Sleepy\Hook')) {
       $template = Hook::addFilter('render_template_' . $this->_file, $template);
       $template = Hook::addFilter('render_template', $template);
     }
@@ -351,20 +351,20 @@ class Template {
   public function bind($placeholder, $value='') {
     if (!is_array($placeholder)) {
       $placeholder = array(
-        $placeholder => $value
+        trim(strtolower($placeholder)) => $value
       );
     }
 
     foreach($placeholder as $key => $value) {
-      $key = strtolower($key);
+      $key = trim(strtolower($key));
 
       if (!is_array($value)) {
-        if (class_exists('Hook')) {
-          $value = Hook::addFilter('bind_placeholder_' . $key, $value);
+        if (class_exists('\Sleepy\Hook')) {
+          $value = Hook::addFilter('bind_placeholder_' . trim($key), $value);
         }
       }
 
-      $this->_data[trim($key)] = $value;
+      $this->_data[$key] = $value;
     }
   }
 
@@ -387,7 +387,7 @@ class Template {
   public function bindStop($placeholder) {
     $content = ob_get_clean();
 
-    if (class_exists('Hook')) {
+    if (class_exists('\Sleepy\Hook')) {
       $content = Hook::addFilter('bind_placeholder_' . $placeholder, $content);
     }
 
@@ -403,7 +403,7 @@ class Template {
   public function get($key) {
     $value = $this->_data[$key];
 
-    if (class_exists('Hook')) {
+    if (class_exists('\Sleepy\Hook')) {
       Hook::addFilter('template_get_' . $key, $value);
     }
 
