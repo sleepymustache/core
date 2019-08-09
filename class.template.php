@@ -90,6 +90,7 @@ class Template {
   public function __construct($template='', $basedir='') {
     if (class_exists('\Sleepy\Hook')) {
       Hook::addAction('template_start');
+      Hook::addAction('template_start' . $template);
     }
 
     // If they didn't pass a basedir then try the default
