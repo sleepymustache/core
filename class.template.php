@@ -33,6 +33,9 @@ namespace Sleepy;
  *
  * ## Changelog
  *
+ * ### Version 1.9
+ * * Add Action for individual Template Starts per $template name
+ *
  * ### Version 1.8
  * * Allow Template::bind() to take an array to bind multiple values at once
  *
@@ -45,9 +48,9 @@ namespace Sleepy;
  *
  * @todo add #if
  *
- * @date May 9, 2019
+ * @date August 9, 2019
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.8
+ * @version 1.9
  * @license  http://opensource.org/licenses/MIT
  */
 
