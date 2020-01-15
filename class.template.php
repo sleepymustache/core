@@ -33,6 +33,9 @@ namespace Sleepy;
  *
  * ## Changelog
  *
+ * ### Version 2.0
+ * * Add rudimentary if statement blocks
+ *
  * ### Version 1.9
  * * Add Action for individual Template Starts per $template name
  *
@@ -48,9 +51,9 @@ namespace Sleepy;
  *
  * @todo add #if
  *
- * @date August 9, 2019
+ * @date January 14, 2020
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.9
+ * @version 2.0
  * @license  http://opensource.org/licenses/MIT
  */
 
@@ -171,12 +174,69 @@ class Template {
   private function _render($template, $data) {
     $template = $this->_renderInclude($template);
     $template = $this->_renderEach($template, $data);
+    $template = $this->_renderIf($template, $data);
 
     if (class_exists('\Sleepy\Hook')) {
       $template = Hook::addFilter('prerender_template', $template);
     }
 
     $template = $this->_renderPlaceholder($template, $data);
+
+    return $template;
+  }
+
+  /**
+   * Render the if blocks
+   *
+   * @todo Not very robust, remove eval at a later date
+   * @todo Add Else blcok
+   * @todo Add tests
+   *
+   * @param  string  $template
+   * @param  mixed[] $data
+   * @return void
+   */
+  private function _renderIf($template, $data) {
+    // Process the #if blocks
+    if (preg_match_all('/{{\s?#if.+?}}(?:(?>[^{}]+)|(?R))*{{\s?\/if\s?}}/ism', $template, $ifs)) {
+
+      // For every #if
+      foreach ($ifs[0] as $value) {
+        // Reset rendered data
+        $rendered = '';
+
+        // break statement into 3 pieces (val1) (operator) (val2)
+        preg_match('/{{\s?#if\s?(?<val1>.*?)\s(?<oper>.*?)\s(?<val2>.*?)\s?}}/', $value, $tokens);
+
+        // Replace placeholders
+        if (isset($this->_data[$tokens[1]])) {
+          $tokens[1] = &$this->_data[$tokens[1]];
+        } else {
+          $tokens[1] = trim(trim($tokens[1], '"'), "'");
+        }
+
+        // Replace placeholders
+        if (isset($this->_data[$tokens[3]])) {
+          $tokens[3] = &$this->_data[$tokens[3]];
+        } else {
+          $tokens[3] = trim(trim($tokens[3], '"'), "'");
+        }
+
+        // Evaluate if Statement
+        $truthy = eval("return \$tokens[1] $tokens[2] \$tokens[3];");
+
+        if ($truthy) {
+          // replace with the if statements
+          $new_template = preg_replace('/{{\s?#if.*?}}/s', '', $value, 1);
+          $new_template = preg_replace('/{{\s?\/if\s?}}$/s', '', $new_template, 1);
+        } else {
+          $new_template = str_replace($value, '', $value);
+        }
+
+        $rendered = $rendered . $this->_render($new_template, $data);
+        $template = str_replace($value, $rendered, $template);
+      }
+    }
 
     return $template;
   }
