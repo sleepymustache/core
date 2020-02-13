@@ -2,38 +2,91 @@
 namespace Sleepy;
 
 /**
- * Provides templating functionality
+ * Provides templating functionality by replacing placeholder with content.
  *
  * ## Usage
  *
- * ### PHP file: *index.php*
- *
- * <code>
- *     require_once('include/sleepy.php');
- *
- *     $page = new Template('templates/default.tpl');
- *     $page->bind('title', 'Sleepy Mustache');
- *     $page->bind('header', 'Hello world!');
- *     $page->show();
- * </code>
+ * Templates are defined in .tpl files and live in *\/app\/templates*. Templates consist of HTML and
+ * *placeholders* that are defined by double curly braces, e.g. {{ page_title }}
  *
  * ### Template file: *\app\templates\default.tpl*
+ * ~~~ php
+ *   <html>
+ *     <head>
+ *       <title>{{ page_title }}</title>
+ *     </head>
+ *     <body>
+ *       <h1>{{ heading }}</h1>
+ *       <p>This page has been viewed {{ hits }} times.</p>
+ *     </body>
+ *   </html>
+ * ~~~
  *
- * <code>
-*    <html>
-*      <head>
-*        <title>{{ title }}</title>
-*      </head>
-*      <body>
-*        <h1>{{ header }}</h1>
-*        <p>This page has been viewed {{ hits }} times.</p>
-*      </body>
-*    </html>
- * </code>
+ * Templates are used by instantiating the Template class and passing the template URL to the
+ * constructor. The bind method is used to map the placeholders to content.
+ *
+ * ### PHP file: *index.php*
+ *
+ * ~~~ php
+ *   require_once('include/sleepy.php');
+ *   $page = new \Sleepy\Template('templates/default.tpl');
+ *   $page->bind('page_title', 'Sleepy Mustache');
+ *   $page->bind('heading', 'Hello world!');
+ *   $page->show(); // Display the compiled template
+ * ~~~
+ *
+ * #### Components
+ *
+ * Components are design to be reusable templates. They can be attached to other templates by using
+ * the *#include* directive. Good examples are *header.tpl* or *slideshow.tpl*.
+ *
+ * ### PHP file: *\app\templates\components\header.tpl*
+ *
+ * ~~~ php
+ *   <html>
+ *     <head>
+ *       <title>{{ page_title }}</title>
+ *     </head>
+ *     <body>
+ * ~~~
+ *
+ * ### PHP file: *\app\templates\components\footer.tpl*
+ *
+ * ~~~ php
+ *     </body>
+ *   </html>
+ * ~~~
+ *
+ * ### Template file: *\app\templates\default.tpl*
+ * ~~~ php
+ *   {{#include components/header.tpl }}
+ *       <h1>{{ heading }}</h1>
+ *       <p>This page has been viewed {{ hits }} times.</p>
+ *   {{#include components/footer.tpl }}
+ * ~~~
+ *
+ * ### Binding Arrays
+ *
+ * Many times you need to bind an array of data to a template. For example, a slideshow or list of
+ * users. In this case, we use the #each directives to loop thru the array.
+ *
+ * ### Template file: *\app\templates\users.tpl*
+ *
+ * ~~~ php
+ *   {#each u in users}
+ *     <div>
+ *       <h3>{{ u.name }}</h3>
+ *       <p>{{ u.description }}</p>
+ *     </div>
+ *   {\each}
+ * ~~~
  *
  * ## Changelog
  *
- * ### Version 2.0
+ * ### Version 1.10.1
+ * * Updated documentation
+ *
+ * ### Version 1.10
  * * Add rudimentary if statement blocks
  *
  * ### Version 1.9
@@ -49,11 +102,9 @@ namespace Sleepy;
  * ### Version 1.6
  * * No longer dependant on Hooks Module
  *
- * @todo add #if
- *
- * @date January 14, 2020
+ * @date February 13, 2020
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 2.0
+ * @version 1.10.1
  * @license  http://opensource.org/licenses/MIT
  */
 
