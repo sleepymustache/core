@@ -6,11 +6,13 @@ namespace Sleepy;
  *
  * ## Usage
  *
- * <code>
+ * ~~~ php
  *   \Sleepy\SM::initialize();
- * </code>
+ * ~~~
  *
  * ## Changelog
+ * ### Version 1.3.1
+ * * Updated documentation
  *
  * ### Version 1.3
  * * No longer mention old setup
@@ -26,9 +28,9 @@ namespace Sleepy;
  * ### Version 1.0
  * * Initial commit
  *
- * @date May 9, 2019
+ * @date February 13, 2020
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.3
+ * @version 1.3.1
  * @license http://opensource.org/licenses/MIT
  */
 class SM {

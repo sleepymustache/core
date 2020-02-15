@@ -13,22 +13,25 @@ require_once('class.controller.php');
  *
  * ## Usage
  *
- * <code>
+ * ~~~ php
  *   class Contacts extends CRUD {
  *     public function create(Route $route) : View {
  *       return new View(new Model(), 'default');
  *     }
  *   }
- * </code>
+ * ~~~
  *
  * ## Changelog
  *
- * ### Version 1.8
+ * ### Version 1.0.1
+ * * Updated documentation
+ *
+ * ### Version 1.0
  * * Initial Release
  *
  * @date May 17, 2019
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.0
+ * @version 1.0.1
  * @license  http://opensource.org/licenses/MIT
  */
 abstract class CRUD extends Controller {
@@ -84,7 +87,7 @@ abstract class CRUD extends Controller {
   abstract function create(Route $route) : View;
 
   /**
-   * Gets a single itemAddress
+   * Gets a single item
    *
    * @param \Sleepy\Route $route
    * @return \Sleepy\View
@@ -100,7 +103,7 @@ abstract class CRUD extends Controller {
   abstract public function update(Route $route) : View;
 
   /**
-   * Deletes an Address
+   * Deletes a single item
    *
    * @param \Sleepy\Route $route
    * @return \Sleepy\View

@@ -9,25 +9,27 @@ require_once('class.template.php');
  *
  * ## Usage
  *
- * <code>
+ * ~~~ php
  *   class Home extends Controller {
  *     public function index(Route $route): View {
  *       return View(new Model());
  *     }
  *   }
- * </code>
+ * ~~~
  *
  * ## Changelog
- * 
- * ### Version 2.0
+ * ### Version 1.1.1
+ * * Updated documentation
+ *
+ * ### Version 1.1
  * * Views are now templates
  *
  * ### Version 1.0
  * * Initial Release
  *
- * @date May 21, 2019
+ * @date February 13, 2020
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 2.0
+ * @version 1.1.1
  * @license  http://opensource.org/licenses/MIT
  */
   class View {
