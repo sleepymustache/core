@@ -4,22 +4,36 @@ namespace Sleepy;
 /**
  * Adds Hooks and Filters
  *
- * You can create modules to hooks by adding php files into the
- * *\app\modules\enabled* directory.
+ * Modules are methods that run at certain points in the application. These points are called hooks.
+ * There are two types of hooks--actions and filters. Actions are points where code that run. For
+ * example, when the page is done generating you can run code at the action *sleepy_postprocess*.
+ * Filters are used to manipulate content. For example, a placeholder called *cms* with the string
+ * "sleepy* can be modified by using the filter *placeholder_cms*.
  *
  * ## Usage
- * <code>
- *   // add a hook point
- *   $content = Hook::addFilter('update_content', $_POST['content']);
  *
- *   // Add a module to the hook point--in /modules/<moduleName.php>
- *   function clean_html ($html) {
- *     $c = htmlentities(trim($html), ENT_NOQUOTES, "UTF-8", false);
- *     return $c;
+ * ### PHP File: index.php
+ * ~~~ php
+ *   // Add a filter hook so that when the execution gets to this line, it runs whichever modules
+ *   // are subscribed to this hook.
+ *   $content = \Sleepy\Hook::addFilter('update_content', $_POST['content']);
+ * ~~~
+ *
+ * ### PHP File: *app\module\sanitize\main.php*
+ * ~~~ php
+ *   namespace Module;
+ *
+ *   class Sanitize {
+ *     public function clean_html($html) {
+ *       $c = htmlentities(trim($html), ENT_NOQUOTES, "UTF-8", false);
+ *       return $c;
+ *     }
  *   }
  *
- *   Hook::applyFilter("update_content", "clean_html");
- * </code>
+ *   // Subscribe to the filter "update_content", defined in *index.php* above, and run the method
+ *   // Sanitize::clean_html() passing in $_POST['content'] as the $html parameter.
+ *   \Sleepy\Hook::applyFilter("update_content", "\Module\Sanitize\clean_html");
+ * ~~~
  *
  * ## Changelog
  *
@@ -40,8 +54,8 @@ namespace Sleepy;
  * @version 1.2
  * @license  http://opensource.org/licenses/MIT
  *
- * @todo devise a better way of passing multiple parameters to hooks, perhaps
- *       use objects instead of arrays
+ * @todo devise a better way of passing multiple parameters to hooks, perhaps use objects instead of
+ *       arrays
  */
 class Hook {
 
@@ -146,6 +160,7 @@ class Hook {
   public static function applyFilter($name, $function) {
     self::_initialize();
 
+    $name = strtolower($name);
     $args = func_get_args();
 
     array_shift($args);
@@ -169,6 +184,7 @@ class Hook {
    */
   public static function addFilter($name, $value) {
     self::_initialize();
+    $name = strtolower($name);
 
     // If there are no functions to run
     if (!isset(self::$_filters[$name])) {

@@ -6,16 +6,19 @@ namespace Sleepy;
  *
  * ## Usage
  *
- * <code>
+ * ~~~ php
  *   Router::route('/user/{{ id }}/*', function ($route) {
  *     echo "The route uses the pattern: ", $route->pattern;
  *     echo "Route was matched using method: ", $route->method;
  *     echo "The wildcard matched: ", $route->splat;
  *     echo "Showing user ", $route->params['id'], "</br>";
  *   });
- * </code>
+ * ~~~
  *
  * ## Changelog
+ *
+ * ### Version 1.2.1
+ * * Updated documentation
  *
  * ### Version 1.2
  * * Renamed _Route to Route to help with Typehinting
@@ -30,11 +33,9 @@ namespace Sleepy;
  * ### Version 0.4
  * * Simplified interface, thanks @cameff
  *
- * @todo  Document the class and add it to homepage
- *
- * @date May 15, 2019
+ * @date February 13, 2020
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.2
+ * @version 1.2.1
  * @license  http://opensource.org/licenses/MIT
  */
 class Router {
@@ -163,11 +164,12 @@ class Router {
   }
 
   /**
-   * Creates a new route
+   * Redirects a user to another route
    *
-   * @param  string   $pattern A pattern to match
-   * @param  function $func    A callback function
-   * @return object            \Sleepy\Route()
+   * @param Controller $controller
+   * @param string $action
+   * @param string $params
+   * @return void
    */
   public static function redirect($controller, $action='index', $params='') {
     $route = new Route(md5("{{ $controller }}/{{ $action }}/{{ id }}/*"));
@@ -211,11 +213,11 @@ class Router {
       $currentPath = $_SERVER['REQUEST_URI'];
     }
 
-		if (self::$querystring) {
-			$currentPath = str_replace('/?q=', '', $currentPath);
-		} else {
-			$currentPath = preg_replace('/\?.*/', '', $currentPath);
-		}
+    if (self::$querystring) {
+      $currentPath = str_replace('/?q=', '', $currentPath);
+    } else {
+      $currentPath = preg_replace('/\?.*/', '', $currentPath);
+    }
 
     // Get all parameters
     self::$parameters = self::getArray($currentPath);
@@ -467,13 +469,15 @@ class Route {
     } else {
       // Call route_start actions
       if (class_exists('Hook')) {
-        Hook::addAction('route_start');
-        Hook::addAction('route_start_' . $this->name);
+        $continue = Hook::addFilter('route_start', true);
+        $continue = Hook::addFilter('route_start_' . $this->name, true);
       }
 
-      $this->pattern = $rawPattern;
-      Router::$routeFound = true;
-      $func($this);
+      if ($continue) {
+        $this->pattern = $rawPattern;
+        Router::$routeFound = true;
+        $func($this);
+      }
 
       // Call route_end actions
       if (class_exists('Hook')) {
