@@ -1,27 +1,40 @@
 <?php
-namespace Sleepy;
 
 /**
-* Main bootstrap file
-*
-* ### Usage
-*
-* <code>
-*     require_once('/app/core/sleepy.php');
-* </code>
-*
-* ### Changelog
-*
-* ## Version 1.1
-* * Added documentation
-*
-*
-* @date July 18, 2016
-* @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
-* @version 1.1
-* @license  http://opensource.org/licenses/MIT
-*/
+ * Main bootstrap file
+ *
+ * ### Usage
+ *
+ * <code>
+ *     require_once('/app/core/sleepy.php');
+ * </code>
+ *
+ * ### Changelog
+ *
+ * ### Version 2.0a
+ * * Converted to PSR-4
+ *
+ * ## Version 1.1
+ * * Added documentation
+ *
+ * php version 7.0.0
+ *
+ * @category Core
+ * @package  Sleepy
+ * @author   Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
+ * @license  http://opensource.org/licenses/MIT; MIT
+ * @link     https://sleepymustache.com
+ */
 
-require_once('class.sm.php');
+// Get the loader that all other Classes will rely on
+require_once $_SERVER['DOCUMENT_ROOT'] . '/app/sleepy/core/Loader.php';
+
+use Sleepy\Core\Loader;
+use Sleepy\Core\SM;
+
+Loader::register();
+Loader::addNamespace('Sleepy', $_SERVER['DOCUMENT_ROOT'] . '\app\sleepy');
+Loader::addNamespace('Sleepy\Core', $_SERVER['DOCUMENT_ROOT'] . '\app\sleepy\core');
+Loader::addNamespace('Module', $_SERVER['DOCUMENT_ROOT'] . '\app\sleepy\module');
 
 SM::initialize();

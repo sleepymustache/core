@@ -1,6 +1,4 @@
 <?php
-namespace Sleepy;
-
 /**
  * Provides sleepyMUSTACHE core bootstrap functionality
  *
@@ -11,6 +9,10 @@ namespace Sleepy;
  * ~~~
  *
  * ## Changelog
+ *
+ * ### Version 2.0a
+ * * Converted to PSR-4
+ *
  * ### Version 1.3.1
  * * Updated documentation
  *
@@ -28,133 +30,168 @@ namespace Sleepy;
  * ### Version 1.0
  * * Initial commit
  *
- * @date February 13, 2020
- * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.3.1
- * @license http://opensource.org/licenses/MIT
+ * php version 7.0.0
+ *
+ * @category Core
+ * @package  Sleepy
+ * @author   Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
+ * @license  http://opensource.org/licenses/MIT; MIT
+ * @link     https://sleepymustache.com
  */
-class SM {
-  /**
-   * Stores the instance of SM when initialized
-   *
-   * @var SM
-   */
-  private static $_instance;
 
-  /**
-   * Is sleepyMUSTACHE initialized?
-   *
-   * @var boolean
-   */
-  public static $is_initialized = false;
+namespace Sleepy\Core;
 
-  /**
-   * Prevent class from being cloned
-   *
-   * @return void
-   */
-  private function __clone() {}
+use Sleepy\Core\Debug;
+use Sleepy\Core\Hook;
+use Sleepy\Core\Router;
 
-  /**
-   * The constructor is private to ensure we only have one sleepy_preprocess
-   * and sleepy_postprocess hooks.
-   *
-   * @return void
-   */
-  private function __construct() {
-    require_once('class.debug.php');
+/**
+ * The SM class is used to initialize/get/set information about the sleepyMUSTACHE
+ * install.
+ *
+ * @category Core
+ * @package  Sleepy
+ * @author   Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
+ * @license  http://opensource.org/licenses/MIT; MIT
+ * @link     https://sleepymustache.com
+ */
+class SM
+{
+    /**
+     * The Live URL
+     *
+     * @var string
+     */
+    public static $live_urls = '';
 
-    // Enable sessions
-    session_start();
+    /**
+     * The stage URL
+     *
+     * @var string
+     */
+    public static $stage_urls = '';
 
-    // Teamsite fixes
-    if (@include_once('Webkit/init.php')) {
-      define('TEAMSITE', true);
-      $_SERVER['DOCUMENT_ROOT'] = $docroot;
-    } else {
-      $WHG_DB_HOST = "";
-      $WHG_DB_USER = "";
-      $WHG_DB_PASSWD = "";
-      $WHG_DB_REPLDB = "";
+    /**
+     * Stores the instance of SM when initialized
+     *
+     * @var SM
+     */
+    private static $_instance;
+
+    /**
+     * Is sleepyMUSTACHE initialized?
+     *
+     * @var boolean
+     */
+    public static $is_initialized = false;
+
+    /**
+     * Prevent class from being cloned
+     *
+     * @return void
+     */
+    private function __clone()
+    {
     }
 
-    // Check for the settings overide in the root
-    if (@!include_once($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'settings.php')) {
-      include_once('settings.php');
+    /**
+     * The constructor is private to ensure we only have one sleepy_preprocess
+     * and sleepy_postprocess hooks.
+     *
+     * @return void
+     */
+    private function __construct()
+    {
+        // Enable sessions
+        session_start();
+
+        $settingsFile = $_SERVER['DOCUMENT_ROOT']
+            . DIRECTORY_SEPARATOR . 'settings.php';
+
+        // Check for the settings overide in the root
+        if (@!include_once $settingsFile) {
+            include_once 'settings.php';
+        }
+
+        Hook::addAction('sleepy_preprocess');
+        register_shutdown_function('\Sleepy\Core\SM::shutdown');
+        ob_start();
+
+        // Send the encoding ahead of time to speed up rendering
+        if (!headers_sent()) {
+            header('Content-Type: text/html; charset=utf-8');
+        }
     }
 
-    require_once('class.hooks.php');
-    require_once('class.template.php');
-    require_once('class.router.php');
-
-    ob_start();
-    Hook::addAction('sleepy_preprocess');
-
-    // Send the encoding ahead of time to speed up rendering
-    header('Content-Type: text/html; charset=utf-8');
-  }
-
-  /**
-   * Show the buffered pages with actions and filters
-   *
-   * @return void
-   */
-  public function __destruct() {
-    echo Hook::addFilter('sleepy_render', ob_get_clean());
-    Hook::addAction('sleepy_postprocess');
-  }
-
-  /**
-   * Initialized the SM class
-   *
-   * @return void
-   */
-  public static function initialize() {
-    if (!self::$is_initialized) {
-      self::$is_initialized = true;
-      self::$_instance = new SM;
-    }
-  }
-
-  /**
-   * Checks if we are in the live environment
-   *
-   * @return boolean Are we in the live environment?
-   */
-  public static function isLive() {
-    return (ENV == 'LIVE');
-  }
-
-  /**
-   * Checks if we are in the staging environment
-   *
-   * @return boolean True Are we in the staging environment?
-   */
-  public static function isStage() {
-    return (ENV == 'STAGE');
-  }
-
-  /**
-   * Checks if we are in the development environment
-   *
-   * @return boolean Are we in the development environment?
-   */
-  public static function isDev() {
-    return (ENV != 'LIVE' && ENV != 'STAGE');
-  }
-
-  /**
-   * Checks if the current site matches a URL
-   *
-   * @param  string  $str The URL to match with current site
-   * @return boolean      true if there was a match
-   */
-  public static function isENV($str) {
-    foreach (explode(',' , $str) as $url) {
-      if (stripos($_SERVER['SERVER_NAME'], $url) !== false)
-        return true;
+    /**
+     * Show the buffered pages with actions and filters
+     *
+     * @return void
+     */
+    public function shutdown()
+    {
+        echo Hook::addFilter('sleepy_render', ob_get_clean());
+        Hook::addAction('sleepy_postprocess');
     }
 
-    return false;
-  }
+    /**
+     * Initialized the SM class
+     *
+     * @return void
+     */
+    public static function initialize()
+    {
+        if (!self::$is_initialized) {
+            self::$is_initialized = true;
+            self::$_instance = new SM;
+        }
+    }
+
+    /**
+     * Checks if we are in the live environment
+     *
+     * @return boolean Are we in the live environment?
+     */
+    public static function isLive()
+    {
+        return self::isENV(self::$live_urls);
+    }
+
+    /**
+     * Checks if we are in the staging environment
+     *
+     * @return boolean True Are we in the staging environment?
+     */
+    public static function isStage()
+    {
+        return self::isENV(self::$stage_urls);
+    }
+
+    /**
+     * Checks if we are in the development environment
+     *
+     * @return boolean Are we in the development environment?
+     */
+    public static function isDev()
+    {
+        return (!self::isEnv(self::$stage_urls) && !self::isEnv(self::$live_urls));
+    }
+
+    /**
+     * Checks if the current site matches a URL
+     *
+     * @param Array $arr The URL to match with current site
+     *
+     * @return boolean      true if there was a match
+     */
+    public static function isENV($arr)
+    {
+        foreach ($arr as $url) {
+            if (stripos($_SERVER['SERVER_NAME'], $url) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

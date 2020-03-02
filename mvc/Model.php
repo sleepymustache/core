@@ -1,9 +1,5 @@
 <?php
-namespace Sleepy;
-
-require_once('class.hooks.php');
-
- /**
+/**
  * Models the data for a View to consume
  *
  * ## Usage
@@ -15,6 +11,9 @@ require_once('class.hooks.php');
  *
  * ## Changelog
  *
+ * ### Version 2.0a
+ * * Converted to PSR-4
+ *
  * ### Version 1.1
  * * Add filters to the getter and setters
  * * filters change if Model is extended
@@ -22,34 +21,95 @@ require_once('class.hooks.php');
  * ### Version 1.0
  * * Initial release
  *
- * @date May 17, 2019
- * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.1
- * @license  http://opensource.org/licenses/MIT
+ * php version 7.0.0
+ *
+ * @category MVC
+ * @package  Sleepy
+ * @author   Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
+ * @license  http://opensource.org/licenses/MIT; MIT
+ * @link     https://sleepymustache.com
  */
-class Model implements \Iterator {
-    private $position = 0;
-    private $data = array();
 
-    public function rewind() {
+namespace Sleepy\MVC;
+
+use Sleepy\Core\Hook;
+
+/**
+ * The Model Class
+ *
+ * All models must extend the Model class
+ *
+ * @category MVC
+ * @package  Sleepy
+ * @author   Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
+ * @license  http://opensource.org/licenses/MIT; MIT
+ * @link     https://sleepymustache.com
+ */
+class Model implements \Iterator
+{
+    /**
+     * The pointer for the Iterator
+     *
+     * @var integer
+     */
+    private $_position = 0;
+
+    /**
+     * The Models data
+     *
+     * @var array
+     */
+    private $_data = array();
+
+    /**
+     * Sets the $_position to the beginning
+     *
+     * @return void
+     */
+    public function rewind()
+    {
         $this->position = 0;
     }
 
-    public function current() {
+    /**
+     * Returns the current element
+     *
+     * @return void
+     */
+    public function current()
+    {
         $keys = array_keys($this->data);
         return $this->data[$keys[$this->position]];
     }
 
-    public function key() {
+    /**
+     * Gets the key for the current position
+     *
+     * @return string The key of the currently selected item
+     */
+    public function key()
+    {
         $keys = array_keys($this->data);
         return $keys[$this->position];
     }
 
-    public function next() {
+    /**
+     * Iteratates the $_position
+     *
+     * @return void
+     */
+    public function next()
+    {
         ++$this->position;
     }
 
-    public function valid() {
+    /**
+     * Is the current element valid?
+     *
+     * @return boolean
+     */
+    public function valid()
+    {
         $keys = array_keys($this->data);
         return isset($keys[$this->position]);
     }
@@ -59,7 +119,8 @@ class Model implements \Iterator {
      *
      * @return void
      */
-    private function clean_class() {
+    private function _cleanClass()
+    {
         $className = get_class($this);
 
         if ($pos = strrpos($className, '\\')) {
@@ -74,17 +135,25 @@ class Model implements \Iterator {
      *
      * @param array $props an array of properties to streamline adding them
      */
-    public function __construct($props = []) {
+    public function __construct($props = [])
+    {
         $this->position = 0;
 
         if (class_exists('\Sleepy\Hook')) {
-            Hook::addAction($this->clean_class() . '_preprocess');
+            Hook::addAction($this->_cleanClass() . '_preprocess');
         }
 
-        foreach($props as $property => $value) {
-             if (class_exists('\Sleepy\Hook')) {
-                $this->data[$property] = Hook::addFilter($this->clean_class() . '_set_' . $property, $value);
-                $this->data[$property] = Hook::addFilter($this->clean_class() . '_set_property', $value);
+        foreach ($props as $property => $value) {
+            if (class_exists('\Sleepy\Hook')) {
+                $this->data[$property] = Hook::addFilter(
+                    $this->_cleanClass() . '_set_' . $property,
+                    $value
+                );
+
+                $this->data[$property] = Hook::addFilter(
+                    $this->_cleanClass() . '_set_property',
+                    $value
+                );
             } else {
                 $this->data[$property] = $value;
             }
@@ -94,20 +163,33 @@ class Model implements \Iterator {
     /**
      * When the Model is destructed
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         if (class_exists('\Sleepy\Hook')) {
-            Hook::addAction($this->clean_class() . '_postprocess');
+            Hook::addAction($this->_cleanClass() . '_postprocess');
         }
     }
 
     /**
      * Getter for all properties
+     *
+     * @param string $property The property to retrieve
+     *
+     * @return mixed The value stored in the $property
      */
-    public function __get($property) {
+    public function __get($property)
+    {
         if (isset($this->data[$property])) {
             if (class_exists('\Sleepy\Hook')) {
-                $output = Hook::addFilter($this->clean_class() . '_get_' . $property, $this->data[$property]);
-                $output = Hook::addFilter($this->clean_class() . '_get_property', $output);
+                $output = Hook::addFilter(
+                    $this->_cleanClass() . '_get_' . $property,
+                    $this->data[$property]
+                );
+                $output = Hook::addFilter(
+                    $this->_cleanClass() . '_get_property',
+                    $output
+                );
+
                 return $output;
 
             } else {
@@ -118,11 +200,23 @@ class Model implements \Iterator {
 
     /**
      * Setter for all properties
+     *
+     * @param string $property The property name
+     * @param mixed  $value    The value to store
+     *
+     * @return void
      */
-    public function __set($property, $value) {
+    public function __set($property, $value)
+    {
         if (class_exists('\Sleepy\Hook')) {
-            $this->data[$property] = Hook::addFilter($this->clean_class() . '_set_' . $property, $value);
-            $this->data[$property] = Hook::addFilter($this->clean_class() . '_set_property', $value);
+            $this->data[$property] = Hook::addFilter(
+                $this->_cleanClass() . '_set_' . $property,
+                $value
+            );
+            $this->data[$property] = Hook::addFilter(
+                $this->_cleanClass() . '_set_property',
+                $value
+            );
         } else {
             $this->data[$property] = $value;
         }
@@ -133,7 +227,8 @@ class Model implements \Iterator {
      *
      * @return array
      */
-    public function __debugInfo() {
+    public function __debugInfo()
+    {
         return $this->data;
     }
 
@@ -142,7 +237,8 @@ class Model implements \Iterator {
      *
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return $this->toJson($this->data);
     }
 
@@ -151,7 +247,8 @@ class Model implements \Iterator {
      *
      * @return void
      */
-    public function __invoke() {
+    public function __invoke()
+    {
         return (object) $this->data;
     }
 
@@ -160,7 +257,8 @@ class Model implements \Iterator {
      *
      * @return void
      */
-    public function toJson() {
+    public function toJson()
+    {
         return json_encode($this->data);
     }
 }

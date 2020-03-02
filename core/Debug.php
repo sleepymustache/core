@@ -1,6 +1,4 @@
 <?php
-namespace Sleepy;
-
 /**
  * Provides custom debugging functions.
  *
@@ -13,15 +11,20 @@ namespace Sleepy;
  * ## Usage
  *
  * ~~~ php
+ *   use Sleepy\Core;
+ *
  *   // Turn debugging to screen on
- *   \Sleepy\Debug::$enable_show = true;
- *   \Sleepy\Debug::out("This will goto the screen because $enable_show == true");
+ *   Debug::$enableShow = true;
+ *   Debug::out("This will goto the screen because $enableShow == true");
  *
  *   // Turn off debugging to screen
- *   \Sleepy\Debug::$enable_show = false;
+ *   Debug::$enableShow = false;
  * ~~~
  *
  * ## Changelog
+ *
+ * ### Version 2.0a
+ * * Converted to PSR-4
  *
  * ### Version 1.10
  * * Added the ability to debug straight to the JS console
@@ -32,19 +35,34 @@ namespace Sleepy;
  * ### Version 1.8
  * * Added namespacing
  *
- * @date April 19, 2017
- * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.10
- * @license  http://opensource.org/licenses/MIT
+ * php version 7.0.0
+ *
+ * @category Core
+ * @package  Sleepy
+ * @author   Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
+ * @license  http://opensource.org/licenses/MIT; MIT
+ * @link     https://sleepymustache.com
  */
 
-class Debug {
+namespace Sleepy\Core;
+
+/**
+ * The Debug class
+ *
+ * @category Core
+ * @package  Sleepy
+ * @author   Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
+ * @license  http://opensource.org/licenses/MIT; MIT
+ * @link     https://sleepymustache.com
+ */
+class Debug
+{
     /**
      * The single instance is stored here.
      *
      * @var Debug
      */
-    private static $_instance = NULL;
+    private static $_instance = null;
 
     /**
      * PDO Database object
@@ -58,28 +76,28 @@ class Debug {
      *
      * @var bool
      */
-    public static $enable_console = false;
+    public static $enableConsole = false;
 
     /**
      * Enable output to screen
      *
      * @var bool
      */
-    public static $enable_show = false;
+    public static $enableShow = false;
 
     /**
      * Enabled logging to a database
      *
      * @var bool
      */
-    public static $enable_log = false;
+    public static $enableLog = false;
 
     /**
      * Enabled logging via email
      *
      * @var bool
      */
-    public static $enable_send = false;
+    public static $enableSend = false;
 
     /**
      * Email address to send email to.
@@ -163,24 +181,36 @@ class Debug {
      *
      * @return void
      */
-    private function __clone() {}
+    private function __clone()
+    {
+    }
 
     /**
      * The constructor is private to ensure we only have one instance
      *
      * @return void
      */
-    private function __construct() {
+    private function __construct()
+    {
         // Setup email defaults
-        $server_ip = (isset($_SERVER['SERVER_ADDR'])) ? $_SERVER['SERVER_ADDR'] : '';
-        $user_ip = (isset($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : '';
-        $filename = (isset($_SERVER['SCRIPT_FILENAME'])) ? $_SERVER['SCRIPT_FILENAME'] : '';
-        $date = date(DATE_ATOM, mktime(date('G'), date('i'), 0, date('m'), date('d'), date('Y')));
+        $serverIp = (isset($_SERVER['SERVER_ADDR']))
+            ? $_SERVER['SERVER_ADDR']
+            : '';
+        $userIp = (isset($_SERVER['REMOTE_ADDR']))
+            ? $_SERVER['REMOTE_ADDR']
+            : '';
+        $filename = (isset($_SERVER['SCRIPT_FILENAME']))
+            ? $_SERVER['SCRIPT_FILENAME']
+            : '';
+        $date = date(
+            DATE_ATOM,
+            mktime(date('G'),  date('i'),  0,  date('m'),  date('d'),  date('Y'))
+        );
 
         Debug::$emailBuffer = array();
         Debug::$emailBuffer[] = "Date: {$date}";
-        Debug::$emailBuffer[] = "Server IP: {$server_ip}";
-        Debug::$emailBuffer[] = "Client IP: {$user_ip}";
+        Debug::$emailBuffer[] = "Server IP: {$serverIp}";
+        Debug::$emailBuffer[] = "Client IP: {$userIp}";
         Debug::$emailBuffer[] = "Filename: {$filename}";
         Debug::$emailBuffer[] = '---';
         Debug::$emailTo = EMAIL_TO;
@@ -202,18 +232,20 @@ class Debug {
      *
      * @return void
      */
-    public function __destruct() {
-        if (self::$enable_send) {
+    public function __destruct()
+    {
+        if (self::$enableSend) {
             self::sendEmail();
         }
     }
 
     /**
-    * Return instance or create initial instance
-    *
-    * @return Debug
-    */
-    private static function _initialize() {
+     * Return instance or create initial instance
+     *
+     * @return Debug
+     */
+    private static function _initialize()
+    {
         if (!self::$_instance) {
             self::$_instance = new Debug();
         }
@@ -225,18 +257,21 @@ class Debug {
      * Displays debug information in JS Console
      *
      * @param mixed $var Anything you want to log
+     *
      * @return bool
-     * @todo  create a hook so the dev can create custom views when outputting
-     *        debug data.
+     *
+     * @todo create a hook so the dev can create custom views when outputting
+     *       debug data.
      */
-    private static function console($var) {
+    private static function _console($var)
+    {
         $output = '';
 
-        if (!self::$enable_console) {
+        if (!self::$enableConsole) {
             return false;
         }
 
-        echo '<script>console.log(';
+        echo '<script>console._log(';
 
         if (is_object($var) && \method_exists($var, '__debugInfo')) {
             $output = json_encode($var->__debugInfo());
@@ -258,21 +293,32 @@ class Debug {
     }
 
     /**
-     * sets the Exception Handler
+     * Sets the Exception Handler
+     *
+     * @return void
      */
-    public function setHandler() {
+    public function setHandler()
+    {
         self::_initialize();
         set_exception_handler(array('Debug', 'exceptionHandler'));
     }
 
     /**
      * Exception Handler
+     *
+     * @param Exception $e The exception
+     *
+     * @return void
      */
-    public function exceptionHandler($e) {
+    public function exceptionHandler($e)
+    {
         if (headers_sent()) {
             echo 'Error: ' , $e->getMessage(), "\n";
         } else {
-            $_SESSION['exception'] = $e->getMessage() . '<br />' . str_replace("\n", '<br />', $e->getTraceAsString()) . '';
+            $_SESSION['exception']
+                = $e->getMessage()
+                . '<br />'
+                . str_replace("\n", '<br />', $e->getTraceAsString());
             header('Location: /error/');
         }
     }
@@ -281,12 +327,15 @@ class Debug {
      * Writes to a database log table.  The table should be called log, or set
      * $this->dbTable. It should contain 2 columns: 'datetime, message'
      *
-     * @param  mixed $var Anything you want to log
+     * @param mixed $var Anything you want to log
+     *
      * @return bool
+     *
      * @todo add a create for the log table
      */
-    private function log($var) {
-        if (!self::$enable_log) {
+    private function _log($var)
+    {
+        if (!self::$enableLog) {
             return false;
         }
 
@@ -299,16 +348,29 @@ class Debug {
         try {
             // MySQL with PDO_MYSQL
             if (!is_object(self::$_dbPDO)) {
-                self::$_dbPDO = new \PDO('mysql:host=' . self::$dbHost . ';dbname=' . self::$dbName, self::$dbUser, self::$dbPass);
-                self::$_dbPDO->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+                self::$_dbPDO = new \PDO(
+                    'mysql:host=' . self::$dbHost . ';dbname=' . self::$dbName,
+                    self::$dbUser, self::$dbPass
+                );
+                self::$_dbPDO->setAttribute(
+                    \PDO::ATTR_ERRMODE,
+                    \PDO::ERRMODE_EXCEPTION
+                );
             }
-            $query = self::$_dbPDO->prepare('INSERT INTO ' . self::$dbTable . ' (datetime, message) values (:datetime, :message)');
-            $datetime = date(DATE_ATOM, mktime(date('G'), date('i'), 0, date('m'), date('d'), date('Y')));
+            $query = self::$_dbPDO->prepare(
+                'INSERT INTO '
+                . self::$dbTable
+                . ' (datetime, message) values (:datetime, :message)'
+            );
+            $datetime = date(
+                DATE_ATOM,
+                mktime(date('G'), date('i'), 0, date('m'), date('d'), date('Y'))
+            );
             $query->bindParam(':datetime', $datetime);
             $query->bindParam(':message', $buffer);
             $query->execute();
         } catch(\PDOException $e) {
-            self::show($e->getMessage());
+            self::_show($e->getMessage());
             return false;
         }
 
@@ -318,13 +380,16 @@ class Debug {
     /**
      * Displays debug information on screen
      *
-     * @param mixed $var Anything you want to log
+     * @param mixed $var Anything you want to log     *
+     *
      * @return bool
-     * @todo  create a hook so the dev can create custom views when outputting
-     *        debug data.
+     *
+     * @todo create a hook so the dev can create custom views when outputting
+     *       debug data.
      */
-    private static function show($var) {
-        if (!self::$enable_show) {
+    private static function _show($var)
+    {
+        if (!self::$enableShow) {
             return false;
         }
 
@@ -344,12 +409,13 @@ class Debug {
     /**
      * Iterates a buffer that gets emailed on __destruct()
      *
-     * @param mixed $var
-     *   Anything you want to log
+     * @param mixed $var Anything you want to log
+     *
      * @return bool
      */
-    private static function send($var) {
-        if (!self::$enable_send) {
+    private static function _send($var)
+    {
+        if (!self::$enableSend) {
             return false;
         }
 
@@ -365,34 +431,37 @@ class Debug {
     /**
      * Determines what output methods are enabled and passes $var to it.
      *
-     * @param  mixed $var Anything you want to log
+     * @param mixed $var Anything you want to log
+     *
      * @return void
      */
-    public static function out($var) {
+    public static function out($var)
+    {
         $result = true;
 
         self::_initialize();
 
-        if (self::$enable_console) {
-            $result = $result && self::$_instance->console($var);
+        if (self::$enableConsole) {
+            $result = $result && self::$_instance->_console($var);
         }
 
-        if (self::$enable_send) {
-            $result = $result && self::$_instance->send($var);
+        if (self::$enableSend) {
+            $result = $result && self::$_instance->_send($var);
         }
 
-        if (self::$enable_log) {
-            $result = $result && self::$_instance->log($var);
+        if (self::$enableLog) {
+            $result = $result && self::$_instance->_log($var);
         }
 
-        if (self::$enable_show) {
-            $result = $result && self::$_instance->show($var);
+        if (self::$enableShow) {
+            $result = $result && self::$_instance->_show($var);
         }
 
-        if (!self::$enable_console &&
-            !self::$enable_show &&
-            !self::$enable_send &&
-            !self::$enable_log) {
+        if (!self::$enableConsole
+            && !self::$enableShow
+            && !self::$enableSend
+            && !self::$enableLog
+        ) {
             $result = false;
         }
 
@@ -404,21 +473,23 @@ class Debug {
      *
      * @return void
      */
-    public static function disable() {
-        self::$enable_console = false;
-        self::$enable_log     = false;
-        self::$enable_send    = false;
-        self::$enable_show    = false;
+    public static function disable()
+    {
+        self::$enableConsole = false;
+        self::$enableLog     = false;
+        self::$enableSend    = false;
+        self::$enableShow    = false;
     }
 
     /**
      * Sends the email.
      *
      * @return bool true if sent successfully
-     * @todo  make this private, I cannot remember why this is public...
+     * @todo   make this private, I cannot remember why this is public...
      */
-    public static function sendEmail() {
-        if (!self::$enable_send) {
+    public static function sendEmail()
+    {
+        if (!self::$enableSend) {
             return false;
         }
 
@@ -432,6 +503,11 @@ class Debug {
         if (self::$emailBCC != '') {
             $headers[] = 'Bcc: ' . self::$emailBCC;
         }
-        return mail(self::$emailTo, self::$emailSubject, implode("<br />\n", self::$emailBuffer), implode("\n", $headers));
+        return mail(
+            self::$emailTo,
+            self::$emailSubject,
+            implode("<br />\n", self::$emailBuffer),
+            implode("\n", $headers)
+        );
     }
 }

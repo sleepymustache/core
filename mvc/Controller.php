@@ -1,9 +1,4 @@
 <?php
-namespace Sleepy;
-
-require_once('class.router.php');
-require_once('class.model.php');
-
 /**
  * The base controller
  *
@@ -19,6 +14,9 @@ require_once('class.model.php');
  *
  * ## Changelog
  *
+ * ### Version 2.0a
+ * * Converted to PSR-4
+ *
  * ### Version 1.1
  * * Updated documentation
  * * Add Hook Actions
@@ -26,19 +24,44 @@ require_once('class.model.php');
  * ### Version 1.0
  * * Initial release
  *
- * @date May 17, 2019
- * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.1
- * @license  http://opensource.org/licenses/MIT
+ * php version 7.0.0
+ *
+ * @category MVC
+ * @package  Sleepy
+ * @author   Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
+ * @license  http://opensource.org/licenses/MIT; MIT
+ * @link     https://sleepymustache.com
  */
-abstract class Controller {
-    public function __construct() {
+
+namespace Sleepy\Mvc;
+
+/**
+ * The controller class must be extended for all Controllers in the routed version
+ * of sleepyMUSTACHE.
+ *
+ * @category MVC
+ * @package  Sleepy
+ * @author   Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
+ * @license  http://opensource.org/licenses/MIT; MIT
+ * @link     https://sleepymustache.com
+ */
+abstract class Controller
+{
+    /**
+     * The constructor
+     */
+    public function __construct()
+    {
         if (class_exists('Hook')) {
             Hook::addFilter('controller_preprocess', $string);
         }
     }
 
-    public function __destruct() {
+    /**
+     * The destructor
+     */
+    public function __destruct()
+    {
         if (class_exists('Hook')) {
             Hook::addFilter('controller_postprocess', $string);
         }
