@@ -33,7 +33,7 @@
  * @link     https://sleepymustache.com
  */
 
-namespace Sleepy\Mvc;
+namespace Sleepy\MVC;
 
 /**
  * The controller class must be extended for all Controllers in the routed version

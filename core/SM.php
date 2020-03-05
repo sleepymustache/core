@@ -41,9 +41,7 @@
 
 namespace Sleepy\Core;
 
-use Sleepy\Core\Debug;
 use Sleepy\Core\Hook;
-use Sleepy\Core\Router;
 
 /**
  * The SM class is used to initialize/get/set information about the sleepyMUSTACHE
@@ -186,6 +184,10 @@ class SM
      */
     public static function isENV($arr)
     {
+        if (!isset($_SERVER['SERVER_NAME'])) {
+            return false;
+        };
+
         foreach ($arr as $url) {
             if (stripos($_SERVER['SERVER_NAME'], $url) !== false) {
                 return true;

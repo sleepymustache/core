@@ -40,7 +40,9 @@
  * @link     https://sleepymustache.com
  */
 
-namespace Sleepy\Mvc;
+namespace Sleepy\MVC;
+
+use Sleepy\MVC\RouteNotFound;
 
 /**
  * The Router class
@@ -59,7 +61,7 @@ class Router
      * @var     array
      * @private
      */
-    private static $_routes = array();
+    public static $_routes = array();
 
     /**
      * Has a route been matched?
@@ -573,9 +575,11 @@ class Route
             if (class_exists('Hook')) {
                 $continue = Hook::addFilter('route_start', true);
                 $continue = Hook::addFilter('route_start_' . $this->name, true);
+            } else {
+                $continue = $this->name;
             }
 
-            if ($continue) {
+            if (isset($continue)) {
                 $this->pattern = $rawPattern;
                 Router::$routeFound = true;
                 $func($this);
