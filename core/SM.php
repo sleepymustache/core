@@ -126,7 +126,7 @@ class SM
      *
      * @return void
      */
-    public function shutdown()
+    public static function shutdown()
     {
         echo Hook::addFilter('sleepy_render', ob_get_clean());
         Hook::addAction('sleepy_postprocess');

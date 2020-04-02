@@ -278,7 +278,7 @@ class Hook
      *
      * @return void
      */
-    public function register($className)
+    public static function register($className)
     {
         if ($className instanceof Module) {
             //$x = new $className();
