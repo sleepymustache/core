@@ -33,8 +33,8 @@ use Sleepy\Core\Loader;
 use Sleepy\Core\SM;
 
 Loader::register();
-Loader::addNamespace('Sleepy', $_SERVER['DOCUMENT_ROOT'] . '\app\sleepy');
-Loader::addNamespace('Sleepy\Core', $_SERVER['DOCUMENT_ROOT'] . '\app\sleepy\core');
-Loader::addNamespace('Module', $_SERVER['DOCUMENT_ROOT'] . '\app\sleepy\module');
+Loader::addNamespace('Sleepy', $_SERVER['DOCUMENT_ROOT'] . '/app/sleepy');
+Loader::addNamespace('Sleepy\Core', $_SERVER['DOCUMENT_ROOT'] . '/app/sleepy/core');
+Loader::addNamespace('Module', $_SERVER['DOCUMENT_ROOT'] . '/app/sleepy/module');
 
 SM::initialize();
