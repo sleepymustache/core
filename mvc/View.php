@@ -37,6 +37,8 @@
 
 namespace Sleepy\MVC;
 
+use \Sleepy\Core\Template;
+
 /**
  * The View class
  *

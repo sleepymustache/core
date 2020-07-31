@@ -391,7 +391,7 @@ class Template
                 $in = $this->_assignArrayByPath($data, $forin['in']);
 
                 // for each changelog
-                if (is_array($in[0])) {
+                if (is_array($in) && is_array($in[0])) {
 
                     // Allow hooks to edit the data
                     if (class_exists('\Sleepy\Core\Hook')) {
