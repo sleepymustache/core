@@ -21,7 +21,7 @@
  *   $content = Hook::addFilter('update_content', $_POST['content']);
  * ~~~
  *
- * ### PHP File: *app\module\sanitize\main.php*
+ * ### PHP File: *app\modules\sanitize\main.php*
  * ~~~ php
  *   namespace Module;
  *
@@ -138,7 +138,7 @@ class Hook
     {
         if (!self::$_initialized) {
             self::$directories[]
-                = DIRBASE . DIRECTORY_SEPARATOR . 'module' . DIRECTORY_SEPARATOR;
+                = DIRBASE . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR;
             self::$_initialized = true;
             self::_load();
         }
