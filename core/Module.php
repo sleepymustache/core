@@ -42,8 +42,8 @@ abstract class Module
      */
     public function __construct()
     {
-        Hook::addAction(get_class($this) . "_preprocess");
-        $this->_render();
+        $this->_render();            
+        Hook::addAction((new \ReflectionClass($this))->getShortName() . "_preprocess");
     }
 
     /**
@@ -51,7 +51,7 @@ abstract class Module
      */
     public function __destruct()
     {
-        Hook::addAction(get_class($this) . "_postprocess");
+        Hook::addAction((new \ReflectionClass($this))->getShortName() . "_postprocess");
     }
 
     /**

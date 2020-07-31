@@ -68,7 +68,7 @@ class Model implements \Iterator
      */
     public function rewind()
     {
-        $this->position = 0;
+        $this->_position = 0;
     }
 
     /**
@@ -79,7 +79,7 @@ class Model implements \Iterator
     public function current()
     {
         $keys = array_keys($this->_data);
-        return $this->_data[$keys[$this->position]];
+        return $this->_data[$keys[$this->_position]];
     }
 
     /**
@@ -90,7 +90,7 @@ class Model implements \Iterator
     public function key()
     {
         $keys = array_keys($this->_data);
-        return $keys[$this->position];
+        return $keys[$this->_position];
     }
 
     /**
@@ -100,7 +100,7 @@ class Model implements \Iterator
      */
     public function next()
     {
-        ++$this->position;
+        ++$this->_position;
     }
 
     /**
@@ -111,7 +111,7 @@ class Model implements \Iterator
     public function valid()
     {
         $keys = array_keys($this->_data);
-        return isset($keys[$this->position]);
+        return isset($keys[$this->_position]);
     }
 
     /**
@@ -137,14 +137,20 @@ class Model implements \Iterator
      */
     public function __construct($props = [])
     {
-        $this->position = 0;
-
-        if (class_exists('\Sleepy\Hook')) {
+        if (class_exists('\Sleepy\Core\Hook')) {
             Hook::addAction($this->_cleanClass() . '_preprocess');
         }
+        
+        // Clean up the propertys
+        foreach (array_keys(get_class_vars(get_class($this))) as $var) {
+            if ($var === '_position') continue;
+            if ($var === '_data') continue;
+            $this->__set($var, $this->$var);
+            unset($this->$var);
+        }   
 
         foreach ($props as $property => $value) {
-            if (class_exists('\Sleepy\Hook')) {
+            if (class_exists('\Sleepy\Core\Hook')) {
                 $this->_data[$property] = Hook::addFilter(
                     $this->_cleanClass() . '_set_' . $property,
                     $value
@@ -165,7 +171,7 @@ class Model implements \Iterator
      */
     public function __destruct()
     {
-        if (class_exists('\Sleepy\Hook')) {
+        if (class_exists('\Sleepy\Core\Hook')) {
             Hook::addAction($this->_cleanClass() . '_postprocess');
         }
     }
@@ -180,7 +186,7 @@ class Model implements \Iterator
     public function __get($property)
     {
         if (isset($this->_data[$property])) {
-            if (class_exists('\Sleepy\Hook')) {
+            if (class_exists('\Sleepy\Core\Hook')) {
                 $output = Hook::addFilter(
                     $this->_cleanClass() . '_get_' . $property,
                     $this->_data[$property]
@@ -208,7 +214,11 @@ class Model implements \Iterator
      */
     public function __set($property, $value)
     {
-        if (class_exists('\Sleepy\Hook')) {
+        if (class_exists('\Sleepy\Core\Hook')) {
+            if (is_array($value)) {
+                // Work around
+                $value = array($value);
+            }
             $this->_data[$property] = Hook::addFilter(
                 $this->_cleanClass() . '_set_' . $property,
                 $value
