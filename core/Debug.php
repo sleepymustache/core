@@ -271,7 +271,7 @@ class Debug
             return false;
         }
 
-        echo '<script>console._log(';
+        echo '<script>console.log(';
 
         if (is_object($var) && \method_exists($var, '__debugInfo')) {
             $output = json_encode($var->__debugInfo());
