@@ -29,8 +29,10 @@ use Sleepy\Core\Hook;
  */
 abstract class Module
 {
+    // A list of hooks and methods. e.g. 'sleepy_preprocess'  => 'startMethod',
     public $hooks = [];
 
+    // The module will only execute on environments that are set to true
     public $environments = [
         'dev'   => true,
         'stage' => true,
@@ -42,7 +44,8 @@ abstract class Module
      */
     public function __construct()
     {
-        $this->_render();            
+        $this->_render();
+        // Each module will automatically include a preprocess Action for extendibility
         Hook::addAction((new \ReflectionClass($this))->getShortName() . "_preprocess");
     }
 
@@ -51,6 +54,7 @@ abstract class Module
      */
     public function __destruct()
     {
+        // Each module will automatically include a postprocess Action for extendibility
         Hook::addAction((new \ReflectionClass($this))->getShortName() . "_postprocess");
     }
 
