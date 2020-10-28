@@ -35,6 +35,8 @@ use Sleepy\Core\SM;
 Loader::register();
 Loader::addNamespace('Sleepy', $_SERVER['DOCUMENT_ROOT'] . '/app/sleepy');
 Loader::addNamespace('Sleepy\Core', $_SERVER['DOCUMENT_ROOT'] . '/app/sleepy/core');
+Loader::addNamespace('Sleepy\MVC', $_SERVER['DOCUMENT_ROOT'] . '/app/sleepy/mvc');
+
 Loader::addNamespace('Module', $_SERVER['DOCUMENT_ROOT'] . '/app/sleepy/modules');
 Loader::addNamespace('Model', $_SERVER['DOCUMENT_ROOT'] . '/app/models');
 
