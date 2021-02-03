@@ -4,13 +4,9 @@ Detailed [Documentation] (http://www.sleepymustache.com/documentation/index.html
 
 sleepyMUSTACHE is a PHP micro framework that has solutions for everyday PHP challenges. Most of the functionality is optional and tries to be as minimalist as possible.
 
-## Getting Started
-
-Setup will be performed automatically the first time the site is accessed. After installation is complete, it is good practice to delete the */app/setup/* folder for security reasons.
-
 ### Core Functionality
 
-The core is the basic functions that are used to build modules. They cannot be removed.
+These core modules are the shared bases for the Basic and Routed Frameworks.
 
 * **[Debugging] (http://www.sleepymustache.com/documentation/class-Sleepy.Debug.html)** -
   Easily send debug information via the browser, email, or database.
@@ -22,57 +18,7 @@ The core is the basic functions that are used to build modules. They cannot be r
 * **[Routing](http://www.sleepymustache.com/documentation/class-Sleepy.Router.html)** -
   A very basic routing class that allows you to build database driven applications.
 
-### Understanding the Module System
-
-Enabling and disabling modules is handled by the folder structure.
-
-There is a */app/module/** folder that contains 2 subdirectories named */app/module/enabled* and */app/module/disabled*. To enable a module move it to the */app/module/enabled* folder. Conversely, you can disable a module by moving it to the */app/module/disabled* folder.
-
-### Available Modules
-
-Modules use *hook points* to inject functionality into your application and modify data.
-
-* **CSS Compress** -
-  Compresses the output CSS only if the application is in the "LIVE" environment.
-* **[Navigation](http://www.sleepymustache.com/documentation/namespace-Module.Navigation.html)** -
-  Creates a UL based on a JSON object that can be used for navigation.
-* **URL Class** -
-  Adds a class based on the current page. For example, if your application is currently on the */user/jaime/index.php* page, the class *user-jaime-index* will be added to the body. Additionally, if you are omitting *index.php* from your URLs, e.g. */user/admin*, the class would be *user-admin-index*.
-* **[CSV](http://www.sleepymustache.com/documentation/namespace-Module.CSV.html)** -
-  Create, Read, Update, Delete (CRUD) class for CSV files with very basic querying capabilities.
-* **[DB](http://www.sleepymustache.com/documentation/namespace-Module.DB.html)** -
-  Create, Read, Update, Delete (CRUD) class using PDO and mySQL.
-* **[DB Grid](http://www.sleepymustache.com/documentation/class-Module.DB.Grid.html)** -
-  Turns a SQL Select statement into a table. The table information can be transformed using *hook filter*, making this a powerful module for visualizing and organizing data.
-* **[File System Database](http://www.sleepymustache.com/documentation/namespace-Module.FSDB.html)** -
-  A basic database that uses flat files and JSON documents. Provides simple functionality when a full blown database is overkill.
-* **[IP 2 Country](http://www.sleepymustache.com/documentation/namespace-Module.IP2Country.html)** -
-  Uses the end-users IP address to detect the country of origin.
-* **[Mailer](http://www.sleepymustache.com/documentation/namespace-Module.Mailer.html)** -
-  Provides basic email functionality with RFC email validation. Combining the templating engine with the Mailer class allows for a elegant solution to HTML email templates.
-* **Memcache** -
-  Improves performance by implementing caching of pages (10 second cache expiration by default)
-* **[Mobile detection](http://www.sleepymustache.com/documentation/namespace-Module.MobiDetect.html)** -
-  Can detect mobile and tablet devices on the server-side. This is now deprecated and will be removed for the v.1.0 release.
-* **HTML Compress** -
-  Compresses the output HTML if we are in the *live* environment.
-* **Head Inserter - Joey Bomber** -
-  Allows you to insert HTML at the end of the HEAD tag.
-* **Robots Dev Hide - Joey Bomber** -
-  Instructs search engines *NOT* to index a site while it is in the Staging environment. It does not affect live/production sites.
-* **[Authentication](http://www.sleepymustache.com/documentation/namespace-Module.Authentication.html)** -
-  Basic user and roles functionality includes a sample schema, authentication, roles, and permissions.
-
-### Sample Modules
-
-These module have little-to-no practical use, but help demonstrate how to build simple modules with *hook filters*.
-
-* **Wizard Title** -
-  This module prepends an ASCII wizard to the title of the page.
-* **Sample Navigation** -
-  Demonstrates how to use the navigation module to build dynamic menus.
-
-### Constants
+### Setting Constants
 
 * **ENV**
   What is the current environment. Values: DEV, STAGE, LIVE
@@ -98,8 +44,6 @@ These module have little-to-no practical use, but help demonstrate how to build 
   The email address to use for the "bcc" field
 * **GA_ACCOUNT**
   The Google Analytics GA Account ID
-
-## Sample Code
 
 ### Hooks
 
@@ -153,7 +97,7 @@ Templates reside inside the */app/templates/* folder and should end in a .tpl ex
   {{ placeholder }}
 ```
 
-To use a template you instantiate the template class passing in the template name. You then bind data to the placeholders and call the *Template::show()* method.
+To use a template you instantiate the Template class passing in the template name. You then bind data to the placeholders and call the *Template::show()* method.
 
 ``` php
   require_once('include/sleepy.php');
@@ -180,8 +124,8 @@ Here is the sample template file (templates/default.tpl):
 We added a *{{ hits }}* placeholder in the template above. For this example, we want to replace the placeholder with the number of times this page was viewed. We can add that functionality using *Hooks*.
 
 ``` php
-  // filename: /modules/enabled/hit-counter/hits.php
-  namespace Hits;
+  // filename: /modules/hit-counter/hits.php
+  namespace Module\Hits;
 
   /**
    * Adds the number of hits to the page.
@@ -195,7 +139,7 @@ We added a *{{ hits }}* placeholder in the template above. For this example, we 
   // Next we attach the function to the hook point
   \Sleepy\Hook::applyFilter(
     'render_placeholder_hits',
-    '\Hits\get'
+    '\Module\Hits\get'
   );
 ```
 
@@ -223,7 +167,7 @@ The templating engine allows you to iterate through multidimensional array data 
 
 ### Databases
 
-The database connection settings are defined in the */app/include/global.php* file. After the *LIVE_URL* is set in the file the framework will detect which DB to use based on the current URL.
+The database connection settings are defined in the */app/settings.php* file.
 
 To get a database instance, use:
 
@@ -231,8 +175,7 @@ To get a database instance, use:
   $db = \Module\DB\DB::getInstance();
 ```
 
-The DB class is static and will automatically handle suppressing multiple
-database connections.
+The DB class is static and will automatically handle suppressing multiple database connections.
 
 ### Sending emails
 
@@ -251,27 +194,6 @@ The Mailer class simplifies sending emails by generating headers for you and usi
   $m->send();
 ```
 
-### CSV
-
-The CSV class ensures that all records are properly escaped and allows you to easily manipulate data inside of a CSV file.
-
-``` php
-  $c = new \Module\CSV\Document();
-  $data = array(
-    'George',
-    'Washington'
-  );
-  $c->add($data);
-
-  // Saves to the file system
-  $c->save('presidents.csv');
-
-  // OR
-
-  // Sends the file to the browser, does not save to the file system
-  $c->show();
-```
-
 ### Debugging
 
 The *Debug* static class allows you to debug on-screen, via email, or by logging to a database.
@@ -279,51 +201,6 @@ The *Debug* static class allows you to debug on-screen, via email, or by logging
 ``` php
   $db = \Module\DB\DB::getInstance();
   \Sleepy\Debug::out($db);
-```
-
-### File System Database (class.fsdb.php)
-
-Sometimes using a database is overkill.  A simple solution is to use the *FSDB*. It is very simple and does not allow complex queries, however it is fast, easy to use, and requires no setup, except checking that proper permissions are set.
-
-``` php
-  $fruit = new stdClass();
-
-  $fruit->name = "Apple";
-  $fruit->color = "Red";
-  $fruit->texture = "Crispy";
-  $fruit->price = 0.50;
-
-  $db = new \Module\FSDB\Connection();
-
-  $db->insert('fruit', $fruit);
-  $data = $db->select('fruit', 'name', 'Apple');
-```
-
-### Country detection
-
-*Country detection* uses the *FSDB* to do a quick lookup of the current country.
-
-``` php
-  $i = new \Module\IP2Country\Converter();
-  $countryCode = $i->getCountryCode($_SERVER['REMOTE_ADDR']);
-
-  if ($countryCode != false) {
-    echo $countryCode;
-  } else {
-    echo $_SERVER['REMOTE_ADDR'] . "(" . ip2long($_SERVER['REMOTE_ADDR']) . ") Not found in " . $i->getTable($_SERVER['REMOTE_ADDR']) . ".";
-  }
-```
-
-### Mobile detection
-
-Mobile detection is done by comparing the UA (user-agent) to a list of currently available mobile and tablet UA. This module is **deprecated** and will be phased out in v1.0.
-
-``` php
-  $md = new \Mobile\MobiDetect\Detector();
-
-  if ($md->isMobile()) {
-    // Do something for mobile only
-  }
 ```
 
 ### Navigation

@@ -2,36 +2,92 @@
 namespace Sleepy;
 
 /**
- * Provides templating functionality
+ * Provides templating functionality by replacing placeholder with content.
  *
  * ## Usage
  *
- * ### PHP file: *index.php*
- *
- * <code>
- *     require_once('include/sleepy.php');
- *
- *     $page = new Template('templates/default.tpl');
- *     $page->bind('title', 'Sleepy Mustache');
- *     $page->bind('header', 'Hello world!');
- *     $page->show();
- * </code>
+ * Templates are defined in .tpl files and live in *\/app\/templates*. Templates consist of HTML and
+ * *placeholders* that are defined by double curly braces, e.g. {{ page_title }}
  *
  * ### Template file: *\app\templates\default.tpl*
+ * ~~~ php
+ *   <html>
+ *     <head>
+ *       <title>{{ page_title }}</title>
+ *     </head>
+ *     <body>
+ *       <h1>{{ heading }}</h1>
+ *       <p>This page has been viewed {{ hits }} times.</p>
+ *     </body>
+ *   </html>
+ * ~~~
  *
- * <code>
-*    <html>
-*      <head>
-*        <title>{{ title }}</title>
-*      </head>
-*      <body>
-*        <h1>{{ header }}</h1>
-*        <p>This page has been viewed {{ hits }} times.</p>
-*      </body>
-*    </html>
- * </code>
+ * Templates are used by instantiating the Template class and passing the template URL to the
+ * constructor. The bind method is used to map the placeholders to content.
+ *
+ * ### PHP file: *index.php*
+ *
+ * ~~~ php
+ *   require_once('include/sleepy.php');
+ *   $page = new \Sleepy\Template('templates/default.tpl');
+ *   $page->bind('page_title', 'Sleepy Mustache');
+ *   $page->bind('heading', 'Hello world!');
+ *   $page->show(); // Display the compiled template
+ * ~~~
+ *
+ * #### Components
+ *
+ * Components are design to be reusable templates. They can be attached to other templates by using
+ * the *#include* directive. Good examples are *header.tpl* or *slideshow.tpl*.
+ *
+ * ### PHP file: *\app\templates\components\header.tpl*
+ *
+ * ~~~ php
+ *   <html>
+ *     <head>
+ *       <title>{{ page_title }}</title>
+ *     </head>
+ *     <body>
+ * ~~~
+ *
+ * ### PHP file: *\app\templates\components\footer.tpl*
+ *
+ * ~~~ php
+ *     </body>
+ *   </html>
+ * ~~~
+ *
+ * ### Template file: *\app\templates\default.tpl*
+ * ~~~ php
+ *   {{#include components/header.tpl }}
+ *       <h1>{{ heading }}</h1>
+ *       <p>This page has been viewed {{ hits }} times.</p>
+ *   {{#include components/footer.tpl }}
+ * ~~~
+ *
+ * ### Binding Arrays
+ *
+ * Many times you need to bind an array of data to a template. For example, a slideshow or list of
+ * users. In this case, we use the #each directives to loop thru the array.
+ *
+ * ### Template file: *\app\templates\users.tpl*
+ *
+ * ~~~ php
+ *   {#each u in users}
+ *     <div>
+ *       <h3>{{ u.name }}</h3>
+ *       <p>{{ u.description }}</p>
+ *     </div>
+ *   {\each}
+ * ~~~
  *
  * ## Changelog
+ *
+ * ### Version 1.10.1
+ * * Updated documentation
+ *
+ * ### Version 1.10
+ * * Add rudimentary if statement blocks
  *
  * ### Version 1.9
  * * Add Action for individual Template Starts per $template name
@@ -46,11 +102,9 @@ namespace Sleepy;
  * ### Version 1.6
  * * No longer dependant on Hooks Module
  *
- * @todo add #if
- *
- * @date August 9, 2019
+ * @date February 13, 2020
  * @author Jaime A. Rodriguez <hi.i.am.jaime@gmail.com>
- * @version 1.9
+ * @version 1.10.1
  * @license  http://opensource.org/licenses/MIT
  */
 
@@ -171,12 +225,69 @@ class Template {
   private function _render($template, $data) {
     $template = $this->_renderInclude($template);
     $template = $this->_renderEach($template, $data);
+    $template = $this->_renderIf($template, $data);
 
     if (class_exists('\Sleepy\Hook')) {
       $template = Hook::addFilter('prerender_template', $template);
     }
 
     $template = $this->_renderPlaceholder($template, $data);
+
+    return $template;
+  }
+
+  /**
+   * Render the if blocks
+   *
+   * @todo Not very robust, remove eval at a later date
+   * @todo Add Else blcok
+   * @todo Add tests
+   *
+   * @param  string  $template
+   * @param  mixed[] $data
+   * @return void
+   */
+  private function _renderIf($template, $data) {
+    // Process the #if blocks
+    if (preg_match_all('/{{\s?#if.+?}}(?:(?>[^{}]+)|(?R))*{{\s?\/if\s?}}/ism', $template, $ifs)) {
+
+      // For every #if
+      foreach ($ifs[0] as $value) {
+        // Reset rendered data
+        $rendered = '';
+
+        // break statement into 3 pieces (val1) (operator) (val2)
+        preg_match('/{{\s?#if\s?(?<val1>.*?)\s(?<oper>.*?)\s(?<val2>.*?)\s?}}/', $value, $tokens);
+
+        // Replace placeholders
+        if (isset($this->_data[$tokens[1]])) {
+          $tokens[1] = &$this->_data[$tokens[1]];
+        } else {
+          $tokens[1] = trim(trim($tokens[1], '"'), "'");
+        }
+
+        // Replace placeholders
+        if (isset($this->_data[$tokens[3]])) {
+          $tokens[3] = &$this->_data[$tokens[3]];
+        } else {
+          $tokens[3] = trim(trim($tokens[3], '"'), "'");
+        }
+
+        // Evaluate if Statement
+        $truthy = eval("return \$tokens[1] $tokens[2] \$tokens[3];");
+
+        if ($truthy) {
+          // replace with the if statements
+          $new_template = preg_replace('/{{\s?#if.*?}}/s', '', $value, 1);
+          $new_template = preg_replace('/{{\s?\/if\s?}}$/s', '', $new_template, 1);
+        } else {
+          $new_template = str_replace($value, '', $value);
+        }
+
+        $rendered = $rendered . $this->_render($new_template, $data);
+        $template = str_replace($value, $rendered, $template);
+      }
+    }
 
     return $template;
   }
