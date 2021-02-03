@@ -135,7 +135,7 @@ class Router {
       // Make all the defaults available in the routes parameters
       $route->params = array_merge($defaults, $route->params);
 
-      $controller_file = $_SERVER['DOCUMENT_ROOT'] . '/app/controllers/';
+      $controller_file = DIRBASE . '/controllers/';
       $controller_file .= strtolower($controller) . '.php';
 
       //Sterilize
@@ -173,7 +173,7 @@ class Router {
     $route = new Route(md5("{{ $controller }}/{{ $action }}/{{ id }}/*"));
     $route->params = $params;
 
-    $controller_file = $_SERVER['DOCUMENT_ROOT'] . '/app/controllers/';
+    $controller_file = DIRBASE . '/controllers/';
     $controller_file .= strtolower($controller) . '.php';
 
     //Sterilize
@@ -184,6 +184,7 @@ class Router {
     // Call Controller::action($route)
     if (file_exists($controller_file)) {
       require_once($controller_file);
+
       if (class_exists($controller)) {
         $c = new $controller;
         if (method_exists($c, $action)) {
@@ -206,11 +207,14 @@ class Router {
    */
   public static function start($currentPath='') {
     self::$routeFound = false;
-
+    
     if ($currentPath == '') {
       $currentPath = $_SERVER['REQUEST_URI'];
     }
 
+    // Remove URLBASE
+    $currentPath = str_replace(URLBASE, '', $currentPath);
+    
 		if (self::$querystring) {
 			$currentPath = str_replace('/?q=', '', $currentPath);
 		} else {
@@ -411,7 +415,7 @@ class Route {
    */
   public function execute() {
     $noMatch = false;
-
+    
     // Exit when there is nothing left to do
     if (count($this->_functions) < 1) {
       return;
@@ -420,6 +424,7 @@ class Route {
     // Shift a function off the queue
     $r = array_shift($this->_functions);
     $rawPattern = $r[0];
+
     $func = $r[1];
 
     if (Router::$routeFound) {
@@ -427,7 +432,7 @@ class Route {
     } else {
       // Get array from string
       $pattern = Router::getArray($rawPattern);
-
+      
       // If they are obviously different then stop the route
       if (count(Router::$parameters) == count($pattern) || $this->_hasWildcard($rawPattern)) {
         // Check for matches, stop if we have a problem

@@ -77,7 +77,7 @@ class SM {
     }
 
     // Check for the settings overide in the root
-    if (@!include_once($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'settings.php')) {
+    if (@!include_once(__DIR__ . '../../settings.php')) {
       include_once('settings.php');
     }
 
