@@ -472,6 +472,8 @@ class Route {
         Hook::addAction('route_failed_' . $this->name);
       }
     } else {
+      $continue = true;
+      
       // Call route_start actions
       if (class_exists('Hook')) {
         $continue = Hook::addFilter('route_start', true);
