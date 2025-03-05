@@ -66,7 +66,7 @@ class Model implements \Iterator
      *
      * @return void
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->_position = 0;
     }
@@ -76,7 +76,7 @@ class Model implements \Iterator
      *
      * @return void
      */
-    public function current()
+    public function current(): mixed
     {
         $keys = array_keys($this->_data);
         return $this->_data[$keys[$this->_position]];
@@ -87,7 +87,7 @@ class Model implements \Iterator
      *
      * @return string The key of the currently selected item
      */
-    public function key()
+    public function key(): string|int
     {
         $keys = array_keys($this->_data);
         return $keys[$this->_position];
@@ -98,7 +98,7 @@ class Model implements \Iterator
      *
      * @return void
      */
-    public function next()
+    public function next(): void
     {
         ++$this->_position;
     }
@@ -108,7 +108,7 @@ class Model implements \Iterator
      *
      * @return boolean
      */
-    public function valid()
+    public function valid(): bool
     {
         $keys = array_keys($this->_data);
         return isset($keys[$this->_position]);
