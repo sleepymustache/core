@@ -220,9 +220,15 @@ class Router
      *
      * @return void
      */
-    public static function redirect($controller, $action='index', $params='')
+    public static function redirect($controller, $action='index', $params=[])
     {
+        
+        
         $route = new Route(md5("{{ $controller }}/{{ $action }}/{{ id }}/*"));
+        
+        $params["controller"] = isset($params["controller"]) ? $params["controller"] : null;
+        $params["action"] = isset($params["action"]) ? $params["action"] : null;
+        $params["id"] = isset($params["id"]) ? $params["id"] : null;
         $route->params = $params;
 
         $controller_file = $_SERVER['DOCUMENT_ROOT'] . '/app/controllers/';
